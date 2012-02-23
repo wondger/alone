@@ -113,7 +113,6 @@
         //pop type:dialog,overlay(default)
         this.type = cfg.type && U.isString(cfg.type) && cfg.type || '';
 
-
         this.srcNode = cfg.srcNode && U.isElement(cfg.srcNode) && cfg.srcNode || null;
 
         //iframe url
@@ -162,8 +161,19 @@
                 ? D.create('div',{'class':this.prefixCls+'alone_mask'})
                 : null;
 
-            this._pop && f.appendChild(this._pop);
+            //ie6 select window module bugfix
+            var maskIframe = null;
+            if(U.ua.ie6) maskIframe = D.create('iframe',{
+                src:'about:blank',
+                width:'100%',
+                height:'100%',
+                frameBorder:'0',
+                scrolling:'no'
+            });
+
+            maskIframe && this._mask && this._mask.appendChild(maskIframe);
             this._mask && f.appendChild(this._mask);
+            this._pop && f.appendChild(this._pop);
 
             document.body.appendChild(f);
 
