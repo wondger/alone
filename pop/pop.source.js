@@ -162,6 +162,7 @@
                 : null;
 
             //ie6 select window module bugfix
+            //can not display mask's backgroundColor
             var maskIframe = null;
             if(U.ua.ie6) maskIframe = D.create('iframe',{
                 src:'about:blank',
