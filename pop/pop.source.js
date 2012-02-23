@@ -85,8 +85,14 @@
 
     var _Pop = function(cfg){
         this.cfg = cfg = cfg || {};
+
+        //pop type:dialog,overlay(default)
         this.type = cfg.type && U.isString(cfg.type) && cfg.type || '';
+
+
         this.srcNode = cfg.srcNode && U.isElement(cfg.srcNode) && cfg.srcNode || null;
+
+        //iframe url
         this.url = cfg.url && U.isString(cfg.url) && cfg.url || '';
         this.width = Number(cfg.width) || 0;
         this.height = Number(cfg.height) || 0;
@@ -114,6 +120,10 @@
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
                 'width:'+this.width+'px;height:'+this.height+'px',
                 '}',
+                '.'+this.prefixCls+'alone_mask{',
+                'position:absolute;width:100%;height:100%;background:#000;',
+                'opacity:0.5;filter:alpha(opacity=50)',
+                '}'
             ].join(''));
 
             var f = document.createDocumentFragment();
