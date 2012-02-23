@@ -35,6 +35,7 @@
         isDOM:function(o){
             return o === win || o === doc || o === docE || U.isElement();
         },
+        isStrict:doc.compatMode === 'CSS1Compat',
         ua:{
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
@@ -48,7 +49,14 @@
 
             if(U.isObject(attr)){
                 for(var k in attr){
-                    el.setAttribute(k,attr[k]);
+                    switch(k.toLowerCase()){
+                        case 'class':
+                            el.setAttribute(U.ua.ie6?'className':'class',attr[k]);
+                            break;
+                        default:
+                            el.setAttribute(k,attr[k]);
+                            break;
+                    }
                 }
             }
 
@@ -64,10 +72,26 @@
             }else{
                 ele.appendChild(doc.createTextNode(css));
             }
+        },
+        viewSize:function(){
+            return U.ua.ie
+                ? (U.isStrict
+                        ? {width:docE.clientWidth,height:docE.clientHeight}
+                        : {width:doc.body.clientWidth,height:doc.body.clientHeight})
+                : {width:win.innerWidth,height:win.innerHeight};
+        },
+        winSize:function(){
+            return {
+                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth),
+                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight)
+            }
+        },
+        scrollTop:function(){
+            return win.pageYOffset || docE.scrollTop || doc.body.scrollTop;
         }
     };
     var E = Event = {
-        bind:function(ele,type,handle){
+        on:function(ele,type,handle){
             var type = /^(on)/.test(type) ? type.substr(2) : type;
             if(ele.addEListener){
                 ele.addEListener(type,function(){handle.call(ele)},false);
@@ -117,12 +141,17 @@
         render:function(cfg){
             D.addCSS([
                 '.'+this.prefixCls+'alone_pop{',
+                'display:none;',
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
-                'width:'+this.width+'px;height:'+this.height+'px',
+                'width:'+this.width+'px;height:'+this.height+'px;',
+                'z-index:100000',
                 '}',
                 '.'+this.prefixCls+'alone_mask{',
-                'position:absolute;width:100%;height:100%;background:#000;',
-                'opacity:0.5;filter:alpha(opacity=50)',
+                'display:none;',
+                'position:absolute;left:0;top:0;',
+                'width:100%;height:100%;background:#000;',
+                'opacity:0.5;filter:alpha(opacity=50);',
+                'z-index:99999',
                 '}'
             ].join(''));
 
@@ -138,9 +167,44 @@
 
             document.body.appendChild(f);
 
+            this._bind();
+
             return this;
         },
+        _bind:function(){
+            var self = this;
+            E.on(win,'resize',function(){
+                self.fixed(true);
+            });
+
+
+            E.on(win,'scroll',function(){
+                self.fixed(true);
+            });
+        },
+        fixed:function(refixed){
+            var vs = D.viewSize(),
+                ws = D.winSize();
+
+            if(this._pop){
+                var offsetTop = (vs.height - this.height)/2;
+                this._pop.style.left = (vs.width - this.width)/2 + 'px';
+                this._pop.style.top = offsetTop + 'px';
+
+                U.ua.ie6 && (this._pop.style.top = D.scrollTop() + offsetTop + 'px');
+            }
+
+            if(!!refixed) return;
+
+            if(this._mask){
+                this._mask.style.width = ws.width + 'px';
+                this._mask.style.height = ws.height + 'px';
+            }
+        },
         show:function(url){
+            this.fixed();
+            this._pop && (this._pop.style.display = 'block');
+            this._mask && (this._mask.style.display = 'block');
         },
         hide:function(){
         },

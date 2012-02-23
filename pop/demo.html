@@ -5,15 +5,27 @@
 <title>pop | alone</title>
 <style type="text/css">
     body{margin:0;padding:0;}
+    #page{height:2000px;}
+    .sex_alone_pop{background-color:#FFF;}
 </style>
 <script type="text/javascript" src="pop.source.js"></script>
 </head>
 <body>
 <div id="page">
+    <select name="" id="">
+        <option value="">item1</option>
+        <option value="">item2</option>
+        <option value="">item3</option>
+        <option value="">item4</option>
+    </select>
+    <button class="btn" onclick="pop.show()">popup</button>
 </div>
 <script>
     var pop = Pop({
-        prefixCls:'sex'
+        prefixCls:'sex',
+        maskable:true,
+        width:400,
+        height:300
     }).render();
 </script>
 </body>
