@@ -125,8 +125,7 @@
         this.maskable = U.isUndefined(cfg.maskable) && true || !!cfg.maskable;
         this.closable = U.isUndefined(cfg.closable) && true || !!cfg.closable;
         this.prefixCls = cfg.prefixCls && U.isString(cfg.prefixCls)
-            && cfg.prefixCls + '_'
-            || '';
+            && cfg.prefixCls || '';
 
         this._pop = null;
         this._iframe = null;
