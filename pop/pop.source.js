@@ -15,19 +15,19 @@
             return o === void 0;
         },
         isString:function(o){
-            return o.constructor == String;
+            return !U.isUndefined(o) && o.constructor == String;
         },
         isNumber:function(o){
-            return o.constructor == Number;
+            return !U.isUndefined(o) && o.constructor == Number;
         },
         isObject:function(o){
-            return o.constructor == Object;
+            return !U.isUndefined(o) && o.constructor == Object;
         },
         isFunction:function(o){
-            return o.constructor == Function;
+            return !U.isUndefined(o) && o.constructor == Function;
         },
         isElement:function(o){
-            return !!(o && o.nodeType && o.nodeType == 1);
+            return !U.isUndefined(o) && !!(o && o.nodeType && o.nodeType == 1);
         },
         /*
          * window,document,document.documentElement,element
