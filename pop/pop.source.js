@@ -119,6 +119,7 @@
         this.url = cfg.url && U.isString(cfg.url) && cfg.url || '';
         this.width = Number(cfg.width) || 0;
         this.height = Number(cfg.height) || 0;
+        this.scroll = !!cfg.scroll && 'yes' || 'no';
 
         this.trigger = U.isElement(cfg.trigger) && cfg.trigger || null;
 
@@ -131,6 +132,8 @@
         this._pop = null;
         this._iframe = null;
         this._mask = null;
+
+        this._rendered = false;
     };
 
     var Pop = function(cfg){
@@ -138,6 +141,8 @@
     };
     _Pop.prototype = {
         render:function(cfg){
+            if(this._rendered) return this;
+
             D.addCSS([
                 '.'+this.prefixCls+'alone_pop{',
                 'display:none;',
@@ -157,6 +162,14 @@
             var f = document.createDocumentFragment();
 
             this._pop = D.create('div',{'class':this.prefixCls+'alone_pop'});
+            this.url && (this._iframe = D.create('iframe',{
+                'src':this.url,
+                'width':'100%',
+                'height':'100%',
+                'scrolling':this.scroll,
+                'frameBorder':'0',
+                'allowtransparency':false
+            }));
             this._mask = this.maskable
                 ? D.create('div',{'class':this.prefixCls+'alone_mask'})
                 : null;
@@ -174,12 +187,14 @@
 
             maskIframe && this._mask && this._mask.appendChild(maskIframe);
             this._mask && f.appendChild(this._mask);
+            this._iframe && this._pop && this._pop.appendChild(this._iframe);
             this._pop && f.appendChild(this._pop);
 
             document.body.appendChild(f);
 
             this._bind();
 
+            this._rendered = true;
             return this;
         },
         _bind:function(){
@@ -218,6 +233,8 @@
             this._mask && (this._mask.style.display = 'block');
         },
         hide:function(){
+            this._pop && (this._pop.style.display = 'none');
+            this._mask && (this._mask.style.display = 'none');
         },
         destroy:function(){
         }

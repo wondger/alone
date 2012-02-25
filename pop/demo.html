@@ -18,15 +18,19 @@
         <option value="">item3</option>
         <option value="">item4</option>
     </select>
-    <button class="btn" onclick="pop.show()">popup</button>
+    <button class="btn" onclick="pop.render();pop.show()">popup</button>
 </div>
 <script>
     var pop = Pop({
         prefixCls:'sex',
-        maskable:true,
+        url:'http://omiga.org/blog/',
         width:400,
-        height:300
-    }).render();
+        height:300,
+        scroll:false
+    });
+    pop._pop.onclick = function(){
+        pop.hide();
+    };
 </script>
 </body>
 </html>
