@@ -110,34 +110,36 @@
     };
 
     var _Pop = function(cfg){
-        this.cfg = cfg = cfg || {};
+        var _ = this;
+        _.cfg = cfg = cfg || {};
 
         //pop type:dialog,overlay(default)
-        this.type = cfg.type && U.isString(cfg.type) && cfg.type || '';
+        _.type = cfg.type && U.isString(cfg.type) && cfg.type || '';
 
-        this.srcNode = cfg.srcNode && U.isElement(cfg.srcNode) && cfg.srcNode || null;
+        _.srcNode = cfg.srcNode && U.isElement(cfg.srcNode) && cfg.srcNode || null;
 
         //iframe url
-        this.url = cfg.url && U.isString(cfg.url) && cfg.url || '';
-        this.width = Number(cfg.width) || 0;
-        this.height = Number(cfg.height) || 0;
-        this.scroll = !!cfg.scroll && 'yes' || 'no';
+        _.url = !_.srcNode && cfg.url && U.isString(cfg.url) && cfg.url || '';
+        _.width = Number(cfg.width) || 0;
+        _.height = Number(cfg.height) || 0;
+        _.scroll = !!cfg.scroll && 'yes' || 'no';
 
-        this.trigger = U.isElement(cfg.trigger) && cfg.trigger || null;
+        _.trigger = U.isElement(cfg.trigger) && cfg.trigger || null;
 
-        this.maskable = U.isUndefined(cfg.maskable) && true || !!cfg.maskable;
-        this.closable = U.isUndefined(cfg.closable) && true || !!cfg.closable;
-        this.prefixCls = cfg.prefixCls && U.isString(cfg.prefixCls)
+        _.maskable = U.isUndefined(cfg.maskable) && true || !!cfg.maskable;
+        _.closable = U.isUndefined(cfg.closable) && true || !!cfg.closable;
+        _.prefixCls = cfg.prefixCls && U.isString(cfg.prefixCls)
             && cfg.prefixCls + '_'
             || '';
 
-        this._pop = null;
-        this._close = null;
-        this._iframe = null;
-        this._mask = null;
-        this._style = null;
+        //private property
+        _._pop = null;
+        _._close = null;
+        _._iframe = null;
+        _._mask = null;
+        _._style = null;
 
-        this._rendered = false;
+        _._rendered = false;
     };
 
     var Pop = function(cfg){
@@ -145,24 +147,25 @@
     };
     _Pop.prototype = {
         render:function(cfg){
-            if(this._rendered) return this;
+            var _ = this;
+            if(_._rendered) return this;
 
-            this._style = D.addCSS([
-                '.'+this.prefixCls+'alone_pop{',
+            _._style = D.addCSS([
+                '.'+_.prefixCls+'alone_pop{',
                 'display:none;',
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
-                'width:'+this.width+'px;height:'+this.height+'px;',
+                'width:'+_.width+'px;height:'+_.height+'px;',
                 'z-index:100000',
                 '}',
-                '.'+this.prefixCls+'alone_pop_x{',
+                '.'+_.prefixCls+'alone_pop_x{',
                 'position:absolute;top:5px;right:5px;',
                 'display:block;',
                 'width:20px;height:20px;',
                 '}',
-                '.'+this.prefixCls+'alone_pop_x:hover{',
+                '.'+_.prefixCls+'alone_pop_x:hover{',
                 'background:#CCC',
                 '}',
-                '.'+this.prefixCls+'alone_mask{',
+                '.'+_.prefixCls+'alone_mask{',
                 'display:none;',
                 'position:absolute;left:0;top:0;',
                 'width:100%;height:100%;background:#000;',
@@ -173,21 +176,21 @@
 
             var f = document.createDocumentFragment();
 
-            this._pop = D.create('div',{'class':this.prefixCls+'alone_pop'});
-            this.url && (this._iframe = D.create('iframe',{
-                'src':this.url,
+            _._pop = D.create('div',{'class':_.prefixCls+'alone_pop'});
+            _.url && (_._iframe = D.create('iframe',{
+                'src':_.url,
                 'width':'100%',
                 'height':'100%',
-                'scrolling':this.scroll,
+                'scrolling':_.scroll,
                 'frameBorder':'0',
                 'allowtransparency':false
             }));
-            this.closable && (this._close = D.create('a',{
+            _.closable && (_._close = D.create('a',{
                 'href':'javascript:void(0)',
-                'class':this.prefixCls+'alone_pop_x'
+                'class':_.prefixCls+'alone_pop_x'
             }));
-            this._mask = this.maskable
-                ? D.create('div',{'class':this.prefixCls+'alone_mask'})
+            _._mask = _.maskable
+                ? D.create('div',{'class':_.prefixCls+'alone_mask'})
                 : null;
 
             //ie6 select window module bugfix
@@ -201,66 +204,70 @@
                 scrolling:'no'
             });
 
-            maskIframe && this._mask && this._mask.appendChild(maskIframe);
-            this._mask && f.appendChild(this._mask);
-            this._iframe && this._pop && this._pop.appendChild(this._iframe);
-            this._close && this._pop && this._pop.appendChild(this._close);
-            this._pop && f.appendChild(this._pop);
+            maskIframe && _._mask && _._mask.appendChild(maskIframe);
+            _._mask && f.appendChild(_._mask);
+            _._iframe && _._pop && _._pop.appendChild(_._iframe);
+            _._close && _._pop && _._pop.appendChild(_._close);
+            _._pop && f.appendChild(_._pop);
 
             document.body.appendChild(f);
 
-            this._bind();
+            _._bind();
 
-            this._rendered = true;
+            _._rendered = true;
             return this;
         },
         _bind:function(){
-            var self = this;
+            var _ = this;
             E.on(win,'resize',function(){
-                self.fixed(true);
+                _.fixed(true);
             });
 
             E.on(win,'scroll',function(){
-                self.fixed(true);
+                _.fixed(true);
             });
 
-            this.closable && this._close && (E.on(this._close,'click',function(){
-                self.hide();
+            _.closable && _._close && (E.on(_._close,'click',function(){
+                _.hide();
             }));
         },
         fixed:function(refixed){
+            var _ = this;
             var vs = D.viewSize(),
                 ws = D.winSize();
 
-            if(this._pop){
-                var offsetTop = (vs.height - this.height)/2;
-                this._pop.style.left = (vs.width - this.width)/2 + 'px';
-                this._pop.style.top = offsetTop + 'px';
+            if(_._pop){
+                var offsetTop = (vs.height - _.height)/2;
+                _._pop.style.left = (vs.width - _.width)/2 + 'px';
+                _._pop.style.top = offsetTop + 'px';
 
-                U.ua.ie6 && (this._pop.style.top = D.scrollTop() + offsetTop + 'px');
+                U.ua.ie6 && (_._pop.style.top = D.scrollTop() + offsetTop + 'px');
             }
 
             if(!!refixed) return;
 
-            if(this._mask){
-                this._mask.style.width = ws.width + 'px';
-                this._mask.style.height = ws.height + 'px';
+            if(_._mask){
+                _._mask.style.width = ws.width + 'px';
+                _._mask.style.height = ws.height + 'px';
             }
         },
         show:function(url){
-            this.fixed();
-            this._pop && (this._pop.style.display = 'block');
-            this._mask && (this._mask.style.display = 'block');
+            var _ = this;
+            _.fixed();
+            _._pop && (_._pop.style.display = 'block');
+            _._mask && (_._mask.style.display = 'block');
         },
         hide:function(){
-            this._pop && (this._pop.style.display = 'none');
-            this._mask && (this._mask.style.display = 'none');
+            var _ = this;
+            _._pop && (_._pop.style.display = 'none');
+            _._mask && (_._mask.style.display = 'none');
         },
         destroy:function(){
-            this._pop && this._pop.parentNode.removeChild(this._pop);
-            this._mask && this._mask.parentNode.removeChild(this._mask);
-            this._style && this._style.parentNode.removeChild(this._style);
-            this._rendered = false;
+            var _ = this;
+            _._pop && _._pop.parentNode.removeChild(_._pop);
+            _._mask && _._mask.parentNode.removeChild(_._mask);
+            _._style && _._style.parentNode.removeChild(_._style);
+            _._rendered = false;
         }
     };
 

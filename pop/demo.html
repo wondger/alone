@@ -7,6 +7,8 @@
     body{margin:0;padding:0;}
     #page{height:2000px;}
     .sex_alone_pop{background-color:#36C;}
+    .src_node{display:none;width:300px;font-size:14px;border:2px solid #DDD;}
+        .src_node h2{height:20px;line-height:20px;font-size:14px;font-weight:bold;}
 </style>
 <script type="text/javascript" src="pop.source.js"></script>
 </head>
@@ -19,6 +21,11 @@
         <option value="">item4</option>
     </select>
     <button class="btn" onclick="pop.render();pop.show()">popup</button>
+    <div id="J_src_node" class="src_node">
+        <h2>Test for src_node</h2>
+        <p>alone is a components library based on native JavaScript.</p>
+        <p>It's don't need other dependencies.</p>
+    </div>
 </div>
 <script>
     var pop = Pop({
