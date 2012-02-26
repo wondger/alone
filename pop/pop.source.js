@@ -130,6 +130,7 @@
             || '';
 
         this._pop = null;
+        this._close = null;
         this._iframe = null;
         this._mask = null;
 
@@ -149,6 +150,14 @@
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
                 'width:'+this.width+'px;height:'+this.height+'px;',
                 'z-index:100000',
+                '}',
+                '.'+this.prefixCls+'alone_pop_x{',
+                'position:absolute;top:5px;right:5px;',
+                'display:block;',
+                'width:20px;height:20px;',
+                '}',
+                '.'+this.prefixCls+'alone_pop_x:hover{',
+                'background:#CCC',
                 '}',
                 '.'+this.prefixCls+'alone_mask{',
                 'display:none;',
@@ -170,6 +179,10 @@
                 'frameBorder':'0',
                 'allowtransparency':false
             }));
+            this.closable && (this._close = D.create('a',{
+                'href':'javascript:void(0)',
+                'class':this.prefixCls+'alone_pop_x'
+            }));
             this._mask = this.maskable
                 ? D.create('div',{'class':this.prefixCls+'alone_mask'})
                 : null;
@@ -188,6 +201,7 @@
             maskIframe && this._mask && this._mask.appendChild(maskIframe);
             this._mask && f.appendChild(this._mask);
             this._iframe && this._pop && this._pop.appendChild(this._iframe);
+            this._close && this._pop && this._pop.appendChild(this._close);
             this._pop && f.appendChild(this._pop);
 
             document.body.appendChild(f);
@@ -203,10 +217,13 @@
                 self.fixed(true);
             });
 
-
             E.on(win,'scroll',function(){
                 self.fixed(true);
             });
+
+            this.closable && this._close && (E.on(this._close,'click',function(){
+                self.hide();
+            }));
         },
         fixed:function(refixed){
             var vs = D.viewSize(),
