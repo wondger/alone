@@ -72,6 +72,8 @@
             }else{
                 ele.appendChild(doc.createTextNode(css));
             }
+
+            return ele;
         },
         viewSize:function(){
             return U.ua.ie
@@ -133,6 +135,7 @@
         this._close = null;
         this._iframe = null;
         this._mask = null;
+        this._style = null;
 
         this._rendered = false;
     };
@@ -144,7 +147,7 @@
         render:function(cfg){
             if(this._rendered) return this;
 
-            D.addCSS([
+            this._style = D.addCSS([
                 '.'+this.prefixCls+'alone_pop{',
                 'display:none;',
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
@@ -254,6 +257,10 @@
             this._mask && (this._mask.style.display = 'none');
         },
         destroy:function(){
+            this._pop && this._pop.parentNode.removeChild(this._pop);
+            this._mask && this._mask.parentNode.removeChild(this._mask);
+            this._style && this._style.parentNode.removeChild(this._style);
+            this._rendered = false;
         }
     };
 
