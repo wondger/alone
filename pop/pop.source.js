@@ -8,9 +8,10 @@
  * @changelog:
  */
 (function(doc,docE,win,undefined){
-    var ua = window.navigator.userAgent.toLowerCase();
+    var ua = navigator.userAgent.toLowerCase();
 
-    var U = util = {
+    //util
+    var U = {
         isU:function(o){
             return o === void 0;
         },
@@ -50,8 +51,11 @@
             ie6:/msie 6/.test(ua)
         }
     };
-    var D = DOM = {
-        create:function(tag,attr){
+
+    //DOM
+    var D = {
+        //create
+        c:function(tag,attr){
             if(!U.isS(tag)) return;
 
             var el = doc.createElement(tag);
@@ -71,8 +75,9 @@
 
             return el;
         },
-        addCSS:function(css){
-            var ele = D.create('style',{'type':'text/css'});
+        //addCSS
+        ac:function(css){
+            var ele = D.c('style',{'type':'text/css'});
 
             (doc.head || doc.getElementsByTagName('head')[0]).appendChild(ele);
 
@@ -84,20 +89,23 @@
 
             return ele;
         },
-        viewSize:function(){
+        //viewportSize
+        vs:function(){
             return U.ua.ie
                 ? (U.isStrict
                         ? {width:docE.clientWidth,height:docE.clientHeight}
                         : {width:doc.body.clientWidth,height:doc.body.clientHeight})
                 : {width:win.innerWidth,height:win.innerHeight};
         },
-        winSize:function(){
+        //windowSize
+        ws:function(){
             return {
                 width:Math.max(doc.body.clientWidth,doc.body.scrollWidth),
                 height:Math.max(doc.body.clientHeight,doc.body.scrollHeight)
             }
         },
-        scrollTop:function(){
+        //scrollTop
+        st:function(){
             return win.pageYOffset || docE.scrollTop || doc.body.scrollTop;
         }
     };
@@ -141,12 +149,7 @@
             && cfg.prefixCls || '';
 
         //private property
-        _._pop = null;
-        _._close = null;
-        _._iframe = null;
-        _._mask = null;
-        _._style = null;
-
+        _._pop,_._close,_._iframe,_._mask,_._style;
         _._rendered = false;
 
         _.evt = {close:[]};
@@ -160,7 +163,7 @@
             var _ = this;
             if(_._rendered) return this;
 
-            _._style = D.addCSS([
+            _._style = D.ac([
                 '.'+_.prefixCls+'alone_pop{',
                 'display:none;',
                 'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
@@ -183,8 +186,8 @@
 
             var f = doc.createDocumentFragment();
 
-            _._pop = D.create('div',{'class':_.prefixCls+'alone_pop'});
-            _.url && (_._iframe = D.create('iframe',{
+            _._pop = D.c('div',{'class':_.prefixCls+'alone_pop'});
+            _.url && (_._iframe = D.c('iframe',{
                 'src':_.url,
                 'width':'100%',
                 'height':'100%',
@@ -192,18 +195,18 @@
                 'frameBorder':'0',
                 'allowtransparency':false
             }));
-            _.closable && (_._close = D.create('a',{
+            _.closable && (_._close = D.c('a',{
                 'href':'javascript:void(0)',
                 'class':_.prefixCls+'alone_pop_x'
             }));
             _._mask = _.maskable
-                ? D.create('div',{'class':_.prefixCls+'alone_mask'})
+                ? D.c('div',{'class':_.prefixCls+'alone_mask'})
                 : null;
 
             //ie6 select window module bugfix
             //can not display mask's backgroundColor
             var maskIframe = null;
-            if(U.ua.ie6) maskIframe = D.create('iframe',{
+            if(U.ua.ie6) maskIframe = D.c('iframe',{
                 src:'about:blank',
                 width:'100%',
                 height:'100%',
@@ -247,15 +250,15 @@
         },
         fixed:function(refixed){
             var _ = this;
-            var vs = D.viewSize(),
-                ws = D.winSize();
+            var vs = D.vs(),
+                ws = D.ws();
 
             if(_._pop){
                 var offsetTop = (vs.height - _.height)/2;
                 _._pop.style.left = (vs.width - _.width)/2 + 'px';
                 _._pop.style.top = offsetTop + 'px';
 
-                U.ua.ie6 && (_._pop.style.top = D.scrollTop() + offsetTop + 'px');
+                U.ua.ie6 && (_._pop.style.top = D.st() + offsetTop + 'px');
             }
 
             if(!!refixed) return;
