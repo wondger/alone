@@ -174,7 +174,7 @@
                 '}'
             ].join(''));
 
-            var f = document.createDocumentFragment();
+            var f = doc.createDocumentFragment();
 
             _._pop = D.create('div',{'class':_.prefixCls+'alone_pop'});
             _.url && (_._iframe = D.create('iframe',{
@@ -210,7 +210,7 @@
             _._close && _._pop && _._pop.appendChild(_._close);
             _._pop && f.appendChild(_._pop);
 
-            document.body.appendChild(f);
+            doc.body.appendChild(f);
 
             _._bind();
 
@@ -271,5 +271,5 @@
         }
     };
 
-    window.Pop = Pop;
+    win.Pop = Pop;
 })(document,document.documentElement,window);
