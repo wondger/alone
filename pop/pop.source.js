@@ -11,31 +11,40 @@
     var ua = window.navigator.userAgent.toLowerCase();
 
     var U = util = {
-        isUndefined:function(o){
+        isU:function(o){
             return o === void 0;
         },
-        isString:function(o){
-            return !U.isUndefined(o) && o.constructor == String;
+        isS:function(o){
+            return !U.isU(o) && o.constructor == String;
         },
-        isNumber:function(o){
-            return !U.isUndefined(o) && o.constructor == Number;
+        isN:function(o){
+            return !U.isU(o) && o.constructor == Number;
         },
-        isObject:function(o){
-            return !U.isUndefined(o) && o.constructor == Object;
+        isO:function(o){
+            return !U.isU(o) && o.constructor == Object;
         },
-        isFunction:function(o){
-            return !U.isUndefined(o) && o.constructor == Function;
+        isF:function(o){
+            return !U.isU(o) && o.constructor == Function;
         },
-        isElement:function(o){
-            return !U.isUndefined(o) && !!(o && o.nodeType && o.nodeType == 1);
+        isA:function(o){
+            return !U.isU(o) && o.constructor == Array;
+        },
+        isE:function(o){
+            return !U.isU(o) && !!(o && o.nodeType && o.nodeType == 1);
         },
         /*
          * window,document,document.documentElement,element
          */
         isDOM:function(o){
-            return o === win || o === doc || o === docE || U.isElement();
+            return o === win || o === doc || o === docE || U.isE();
         },
         isStrict:doc.compatMode === 'CSS1Compat',
+        each:function(arr,fn){
+            if(!U.isA(arr) || !U.isF(fn)) return;
+            
+            var i = 0,l = arr.length;
+            while(i<l,fn.call(null,arr[i++]));
+        },
         ua:{
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
@@ -43,11 +52,11 @@
     };
     var D = DOM = {
         create:function(tag,attr){
-            if(!U.isString(tag)) return;
+            if(!U.isS(tag)) return;
 
             var el = doc.createElement(tag);
 
-            if(U.isObject(attr)){
+            if(U.isO(attr)){
                 for(var k in attr){
                     switch(k.toLowerCase()){
                         case 'class':
@@ -114,21 +123,21 @@
         _.cfg = cfg = cfg || {};
 
         //pop type:dialog,overlay(default)
-        _.type = cfg.type && U.isString(cfg.type) && cfg.type || '';
+        _.type = cfg.type && U.isS(cfg.type) && cfg.type || '';
 
-        _.srcNode = cfg.srcNode && U.isElement(cfg.srcNode) && cfg.srcNode || null;
+        _.srcNode = cfg.srcNode && U.isE(cfg.srcNode) && cfg.srcNode || null;
 
         //iframe url
-        _.url = !_.srcNode && cfg.url && U.isString(cfg.url) && cfg.url || '';
+        _.url = !_.srcNode && cfg.url && U.isS(cfg.url) && cfg.url || '';
         _.width = Number(cfg.width) || 0;
         _.height = Number(cfg.height) || 0;
         _.scroll = !!cfg.scroll && 'yes' || 'no';
 
-        _.trigger = U.isElement(cfg.trigger) && cfg.trigger || null;
+        _.trigger = U.isE(cfg.trigger) && cfg.trigger || null;
 
-        _.maskable = U.isUndefined(cfg.maskable) && true || !!cfg.maskable;
-        _.closable = U.isUndefined(cfg.closable) && true || !!cfg.closable;
-        _.prefixCls = cfg.prefixCls && U.isString(cfg.prefixCls)
+        _.maskable = U.isU(cfg.maskable) && true || !!cfg.maskable;
+        _.closable = U.isU(cfg.closable) && true || !!cfg.closable;
+        _.prefixCls = cfg.prefixCls && U.isS(cfg.prefixCls)
             && cfg.prefixCls || '';
 
         //private property
@@ -139,6 +148,8 @@
         _._style = null;
 
         _._rendered = false;
+
+        _.evt = {close:[]};
     };
 
     var Pop = function(cfg){
@@ -211,7 +222,8 @@
             _._bind();
 
             _._rendered = true;
-            return this;
+
+            return _;
         },
         _bind:function(){
             var _ = this;
@@ -225,7 +237,13 @@
 
             _.closable && _._close && (E.on(_._close,'click',function(){
                 _.hide();
+
+                U.each(_.evt.close,function(fn){
+                    fn.call(_);
+                });
             }));
+
+            return _;
         },
         fixed:function(refixed){
             var _ = this;
@@ -246,17 +264,23 @@
                 _._mask.style.width = ws.width + 'px';
                 _._mask.style.height = ws.height + 'px';
             }
+
+            return _;
         },
         show:function(url){
             var _ = this;
             _.fixed();
             _._pop && (_._pop.style.display = 'block');
             _._mask && (_._mask.style.display = 'block');
+
+            return _;
         },
         hide:function(){
             var _ = this;
             _._pop && (_._pop.style.display = 'none');
             _._mask && (_._mask.style.display = 'none');
+
+            return _;
         },
         destroy:function(){
             var _ = this;
@@ -264,6 +288,17 @@
             _._mask && _._mask.parentNode.removeChild(_._mask);
             _._style && _._style.parentNode.removeChild(_._style);
             _._rendered = false;
+
+            return _;
+        },
+        on:function(evt,fn){
+            if(!U.isS(evt) || !U.isF(fn)) return this;
+
+            var _ = this,
+                evt = evt.toLowerCase();
+            _.evt[evt] && _.evt[evt].push(fn);
+
+            return _;
         }
     };
 
