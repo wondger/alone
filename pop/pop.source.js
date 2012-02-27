@@ -129,8 +129,7 @@
         _.maskable = U.isUndefined(cfg.maskable) && true || !!cfg.maskable;
         _.closable = U.isUndefined(cfg.closable) && true || !!cfg.closable;
         _.prefixCls = cfg.prefixCls && U.isString(cfg.prefixCls)
-            && cfg.prefixCls + '_'
-            || '';
+            && cfg.prefixCls || '';
 
         //private property
         _._pop = null;
@@ -161,9 +160,6 @@
                 'position:absolute;top:5px;right:5px;',
                 'display:block;',
                 'width:20px;height:20px;',
-                '}',
-                '.'+_.prefixCls+'alone_pop_x:hover{',
-                'background:#CCC',
                 '}',
                 '.'+_.prefixCls+'alone_mask{',
                 'display:none;',
