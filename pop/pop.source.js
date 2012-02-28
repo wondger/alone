@@ -123,6 +123,11 @@
                     handle.call(ele);
                 }
             }
+        },
+        fire:function(evt,_){
+            U.each(evt,function(fn){
+                fn.call(_);
+            });
         }
     };
 
@@ -152,7 +157,7 @@
         _._pop,_._close,_._iframe,_._mask,_._style;
         _._rendered = false;
 
-        _.evt = {close:[]};
+        _.evt = {close:[],show:[]};
     };
 
     var Pop = function(cfg){
@@ -241,9 +246,7 @@
             _.closable && _._close && (E.on(_._close,'click',function(){
                 _.hide();
 
-                U.each(_.evt.close,function(fn){
-                    fn.call(_);
-                });
+                E.fire(_.evt.close,_);
             }));
 
             return _;
@@ -275,6 +278,8 @@
             _.fixed();
             _._pop && (_._pop.style.display = 'block');
             _._mask && (_._mask.style.display = 'block');
+
+            E.fire(_.evt.show,_);
 
             return _;
         },
