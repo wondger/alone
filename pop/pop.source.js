@@ -133,29 +133,10 @@
 
     var _Pop = function(cfg){
         var _ = this;
-        _.cfg = cfg = cfg || {};
 
-        //pop type:dialog,overlay(default)
-        _.type = cfg.type && U.isS(cfg.type) && cfg.type || '';
-
-        _.srcNode = cfg.srcNode && U.isE(cfg.srcNode) && cfg.srcNode || null;
-
-        //iframe url
-        _.url = !_.srcNode && cfg.url && U.isS(cfg.url) && cfg.url || '';
-        _.width = Number(cfg.width) || 0;
-        _.height = Number(cfg.height) || 0;
-        _.scroll = !!cfg.scroll && 'yes' || 'no';
-
-        _.trigger = U.isE(cfg.trigger) && cfg.trigger || null;
-
-        _.maskable = U.isU(cfg.maskable) && true || !!cfg.maskable;
-        _.closable = U.isU(cfg.closable) && true || !!cfg.closable;
-        _.prefixCls = cfg.prefixCls && U.isS(cfg.prefixCls)
-            && cfg.prefixCls || '';
-
+        _._cfg(cfg);
         //private property
         _._pop,_._close,_._iframe,_._mask,_._style;
-        _._rendered = false;
 
         _.evt = {close:[],show:[]};
     };
@@ -166,7 +147,10 @@
     _Pop.prototype = {
         render:function(cfg){
             var _ = this;
-            if(_._rendered) return this;
+
+            _._cfg(cfg);
+
+            _.destroy();
 
             _._style = D.ac([
                 '.'+_.prefixCls+'alone_pop{',
@@ -229,9 +213,29 @@
 
             _._bind();
 
-            _._rendered = true;
-
             return _;
+        },
+        _cfg:function(cfg){
+            var _ = this;
+            _.cfg = cfg = cfg || {};
+
+            //pop type:dialog,overlay(default)
+            _.type = cfg.type && U.isS(cfg.type) && cfg.type || _.type || '';
+
+            _.srcNode = cfg.srcNode && U.isE(cfg.srcNode) && cfg.srcNode || _.srcNode || null;
+
+            //iframe url
+            _.url = !_.srcNode && cfg.url && U.isS(cfg.url) && cfg.url || _.url || '';
+            _.width = Number(cfg.width) || _.width || 0;
+            _.height = Number(cfg.height) || _.height || 0;
+            _.scroll = !!cfg.scroll && 'yes' || _.scroll || 'no';
+
+            _.trigger = U.isE(cfg.trigger) && cfg.trigger || _.trigger || null;
+
+            _.maskable = U.isU(cfg.maskable) ? (U.isU(_.maskable) ? true : _.maskable) : !!cfg.maskable;
+            _.closable = U.isU(cfg.closable) ? (U.isU(_.closable) ? true : _.closable) : !!cfg.closable;
+            _.prefixCls = !!cfg.prefixCls && U.isS(cfg.prefixCls)
+                && cfg.prefixCls || _.prefixCls || '';
         },
         _bind:function(){
             var _ = this;
@@ -295,7 +299,6 @@
             _._pop && _._pop.parentNode.removeChild(_._pop);
             _._mask && _._mask.parentNode.removeChild(_._mask);
             _._style && _._style.parentNode.removeChild(_._style);
-            _._rendered = false;
 
             return _;
         },
