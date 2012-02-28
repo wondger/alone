@@ -150,6 +150,7 @@
 
             _._cfg(cfg);
 
+            //invoke destroy when every render
             _.destroy();
 
             _._style = D.ac([
@@ -217,7 +218,7 @@
         },
         _cfg:function(cfg){
             var _ = this;
-            _.cfg = cfg = cfg || {};
+            _.cfg = cfg = !!cfg && cfg || {};
 
             //pop type:dialog,overlay(default)
             _.type = cfg.type && U.isS(cfg.type) && cfg.type || _.type || '';
@@ -282,13 +283,13 @@
 
             if(U.isS(url)){
                 _._iframe && (_._iframe.src = url) || (_._iframe = D.c('iframe',{
-                    'src':_.url,
+                    'src':url,
                     'width':'100%',
                     'height':'100%',
                     'scrolling':_.scroll,
                     'frameBorder':'0',
                     'allowtransparency':false
-                }));
+                })) && _._pop && _._pop.appendChild(_._iframe);
             }
 
             _.fixed();
