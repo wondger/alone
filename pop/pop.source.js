@@ -49,6 +49,12 @@
         trim:function(s){
             return s.replace(/^\s+/,'').replace(/\s+$/,'');
         },
+        //substitute
+        ss:function(s,o){
+            return s.replace(/{{([^}{2}]+)}}/g,function(a,b){
+                return b && o[b] || '';
+            });
+        },
         ua:{
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
@@ -78,8 +84,8 @@
 
             return el;
         },
-        //addCSS
-        ac:function(css){
+        //addStyle
+        as:function(css){
             var ele = D.c('style',{'type':'text/css'});
 
             (doc.head || doc.getElementsByTagName('head')[0]).appendChild(ele);
@@ -93,11 +99,16 @@
             return ele;
         },
         //addClass
-        aCls:function(e,cls){
+        ac:function(e,cls){
             var r = new RegExp('\\b'+cls+'\\b','g');
             if(r.test(e.className)) return;
 
-            e.className += !!U.trim(e.className) ? ' ' + cls : cls;
+            e.className = U.trim(e.className) + (!!U.trim(e.className) ? ' ' + cls : cls);
+        },
+        //removeClass
+        rc:function(e,cls){
+            var r = new RegExp('\\b'+cls+'\\b','g');
+            e.className = e.className.replace(r,'');
         },
         //viewportSize
         vs:function(){
@@ -147,6 +158,7 @@
         //set configuration
         _._cfg(cfg);
 
+
         //private property
         _._pop,_._close,_._iframe,_._mask,_._style;
 
@@ -157,6 +169,34 @@
         return new _Pop(cfg);
     };
     _Pop.prototype = {
+        //base css
+        _bc:[
+            '.alone_pop{',
+            'display:none;',
+            'position:{{position}};width:{{width}}px;height:{{height}}px;',
+            'z-index:100000',
+            '}',
+            '.alone_pop_x{',
+            'position:absolute;top:1px;right:1px;z-index:2;',
+            'display:block;',
+            'width:20px;height:20px;',
+            '}',
+            '.alone_mask{',
+            'display:none;',
+            'position:absolute;left:0;top:0;',
+            'width:100%;height:100%;background:#000;',
+            'opacity:0.5;filter:alpha(opacity=50);',
+            'z-index:99999',
+            '}'
+        ],
+        //dialog css
+        _dc:[
+            '.alone_pop_hd{',
+            'width:{{width_hd}}px;height:24px;line-height:24px;padding:0 5px;',
+            'position:absolute;left:0;top:0;z-index:1;',
+            'background:#CCC',
+            '}'
+        ],
         //also can pass cfg
         render:function(cfg){
             var _ = this;
@@ -166,31 +206,22 @@
             //invoke destroy when every render
             _.destroy();
 
-            _._style = D.ac([
-                '.'+_.prefixCls+'alone_pop{',
-                'display:none;',
-                'position:'+(U.ua.ie6 ? 'absolute' : 'fixed')+';',
-                'width:'+_.width+'px;height:'+_.height+'px;',
-                'z-index:100000',
-                '}',
-                '.'+_.prefixCls+'alone_pop_x{',
-                'position:absolute;top:5px;right:5px;',
-                'display:block;',
-                'width:20px;height:20px;',
-                '}',
-                '.'+_.prefixCls+'alone_mask{',
-                'display:none;',
-                'position:absolute;left:0;top:0;',
-                'width:100%;height:100%;background:#000;',
-                'opacity:0.5;filter:alpha(opacity=50);',
-                'z-index:99999',
-                '}'
-            ].join(''));
-
             var f = doc.createDocumentFragment();
 
+            _._style = D.as(U.ss(_._bc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
+                    + (_.type==='dialog'
+                    ? _._dc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
+                    : ''),{
+                        width:_.width,
+                        width_hd:_.width-10,
+                        height:_.height,
+                        position:U.ua.ie6?'absolute':'fixed'
+                    }));
+
+            (doc.head || document.getElementsByTagName('head')[0]).appendChild(_._style);
+
             _._pop = _.srcNode && _.srcNode || D.c('div',{'class':_.prefixCls+'alone_pop'});
-            _.srcNode && (D.aCls(_.srcNode,_.prefixCls+'alone_pop'));
+            _.srcNode && (D.ac(_.srcNode,_.prefixCls+'alone_pop'));
 
             _.url && !_.srcNode && (_._iframe = D.c('iframe',{
                 'src':_.url,
@@ -200,6 +231,12 @@
                 'frameBorder':'0',
                 'allowtransparency':false
             }));
+
+            _.type==='dialog' && (_._hd = D.c('div',{
+                'class':_.prefixCls+'alone_pop_hd'
+            }));
+            _._hd && (_._hd.innerHTML = _.title);
+
             _.closable && (_._close = D.c('a',{
                 'href':'javascript:void(0)',
                 'class':_.prefixCls+'alone_pop_x'
@@ -222,6 +259,7 @@
             maskIframe && _._mask && _._mask.appendChild(maskIframe);
             _._mask && f.appendChild(_._mask);
             _._iframe && _._pop && _._pop.appendChild(_._iframe);
+            _._hd && _._pop && _._pop.appendChild(_._hd);
             _._close && _._pop && _._pop.appendChild(_._close);
             _._pop && !_.srcNode && f.appendChild(_._pop);
 
@@ -236,9 +274,10 @@
             _.cfg = cfg = cfg && cfg || {};
 
             //pop type:dialog,overlay(default)
-            _.type = cfg.type && U.isS(cfg.type) && cfg.type || _.type || '';
+            _.type = cfg.type && U.isS(cfg.type) && cfg.type.toLowerCase() || _.type || '';
 
             _.srcNode = cfg.srcNode && U.isE(cfg.srcNode) && cfg.srcNode || _.srcNode || null;
+            _.title = cfg.title && U.isS(cfg.title) && cfg.title || _.title || '';
 
             //iframe url
             _.url = !_.srcNode && cfg.url && U.isS(cfg.url) && cfg.url || _.url || '';
@@ -324,8 +363,10 @@
         },
         destroy:function(){
             var _ = this;
-            _._pop && _._pop.parentNode.removeChild(_._pop);
+            _.srcNode ? D.rc(_.srcNode,_.prefixCls+'alone_pop')
+                : (_._pop && _._pop.parentNode.removeChild(_._pop));
             _._mask && _._mask.parentNode.removeChild(_._mask);
+            _._close && _._close.parentNode.removeChild(_._close);
             _._style && _._style.parentNode.removeChild(_._style);
 
             return _;

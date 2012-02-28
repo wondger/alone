@@ -9,7 +9,7 @@
     .sex_alone_pop{background-color:#FFF;}
     .sex_alone_pop_x{background:url(images/x.png) no-repeat 50%;}
         .sex_alone_pop_x:hover{background-color:#333;}
-    .src_node{display:none;width:300px;padding:10px;font-size:14px;border:2px solid #DDD;}
+    .src_node{display:none;width:300px;font-size:14px;border:2px solid #DDD;}
         .src_node h2{height:20px;line-height:20px;font-size:14px;font-weight:bold;}
 </style>
 <script type="text/javascript" src="pop.source.js"></script>
@@ -24,9 +24,11 @@
     </select>
     <button class="btn" onclick="pop.show('http://fedtool.com/')">popup</button>
     <div id="J_src_node" class="src_node">
-        <h2>Test for src_node</h2>
-        <p>alone is a components library based on native JavaScript.</p>
-        <p>It's don't need other dependencies.</p>
+        <div style="padding:10px;">
+            <h2>Test for src_node</h2>
+            <p>alone is a components library based on native JavaScript.</p>
+            <p>It's don't need other dependencies.</p>
+        </div>
     </div>
 </div>
 <script>
@@ -48,9 +50,13 @@
         height:300,
         scroll:false
     }).on('close',function(){
-        alert('close trigger!')
+        try{
+            console.info('close trigger!');
+        }catch(e){}
     }).on('show',function(){
-        alert('show trigger!');
+        try{
+            console.info('show trigger!');
+        }catch(e){}
     });
 </script>
 </body>
