@@ -279,6 +279,18 @@
         },
         show:function(url){
             var _ = this;
+
+            if(U.isS(url)){
+                _._iframe && (_._iframe.src = url) || (_._iframe = D.c('iframe',{
+                    'src':_.url,
+                    'width':'100%',
+                    'height':'100%',
+                    'scrolling':_.scroll,
+                    'frameBorder':'0',
+                    'allowtransparency':false
+                }));
+            }
+
             _.fixed();
             _._pop && (_._pop.style.display = 'block');
             _._mask && (_._mask.style.display = 'block');
