@@ -9,7 +9,7 @@
     .sex_alone_pop{background-color:#FFF;}
     .sex_alone_pop_x{background:url(images/x.png) no-repeat 50%;}
         .sex_alone_pop_x:hover{background-color:#333;}
-    .src_node{display:none;width:300px;font-size:14px;border:2px solid #DDD;}
+    .src_node{display:none;width:300px;padding:10px;font-size:14px;border:2px solid #DDD;}
         .src_node h2{height:20px;line-height:20px;font-size:14px;font-weight:bold;}
 </style>
 <script type="text/javascript" src="pop.source.js"></script>
@@ -42,6 +42,7 @@
     }).render({
         prefixCls:'sex_',
         //url:'http://fedtool.com/',
+        srcNode:document.getElementById('J_src_node'),
         maskable:true,
         width:400,
         height:300,

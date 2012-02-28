@@ -46,6 +46,9 @@
             var i = 0,l = arr.length;
             while(i<l,fn.call(null,arr[i++]));
         },
+        trim:function(s){
+            return s.replace(/^\s+/,'').replace(/\s+$/,'');
+        },
         ua:{
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
@@ -88,6 +91,13 @@
             }
 
             return ele;
+        },
+        //addClass
+        aCls:function(e,cls){
+            var r = new RegExp('\\b'+cls+'\\b','g');
+            if(r.test(e.className)) return;
+
+            e.className += !!U.trim(e.className) ? ' ' + cls : cls;
         },
         //viewportSize
         vs:function(){
@@ -134,7 +144,9 @@
     var _Pop = function(cfg){
         var _ = this;
 
+        //set configuration
         _._cfg(cfg);
+
         //private property
         _._pop,_._close,_._iframe,_._mask,_._style;
 
@@ -145,6 +157,7 @@
         return new _Pop(cfg);
     };
     _Pop.prototype = {
+        //also can pass cfg
         render:function(cfg){
             var _ = this;
 
@@ -176,8 +189,10 @@
 
             var f = doc.createDocumentFragment();
 
-            _._pop = D.c('div',{'class':_.prefixCls+'alone_pop'});
-            _.url && (_._iframe = D.c('iframe',{
+            _._pop = _.srcNode && _.srcNode || D.c('div',{'class':_.prefixCls+'alone_pop'});
+            _.srcNode && (D.aCls(_.srcNode,_.prefixCls+'alone_pop'));
+
+            _.url && !_.srcNode && (_._iframe = D.c('iframe',{
                 'src':_.url,
                 'width':'100%',
                 'height':'100%',
@@ -208,7 +223,7 @@
             _._mask && f.appendChild(_._mask);
             _._iframe && _._pop && _._pop.appendChild(_._iframe);
             _._close && _._pop && _._pop.appendChild(_._close);
-            _._pop && f.appendChild(_._pop);
+            _._pop && !_.srcNode && f.appendChild(_._pop);
 
             doc.body.appendChild(f);
 
@@ -218,7 +233,7 @@
         },
         _cfg:function(cfg){
             var _ = this;
-            _.cfg = cfg = !!cfg && cfg || {};
+            _.cfg = cfg = cfg && cfg || {};
 
             //pop type:dialog,overlay(default)
             _.type = cfg.type && U.isS(cfg.type) && cfg.type || _.type || '';
@@ -229,13 +244,13 @@
             _.url = !_.srcNode && cfg.url && U.isS(cfg.url) && cfg.url || _.url || '';
             _.width = Number(cfg.width) || _.width || 0;
             _.height = Number(cfg.height) || _.height || 0;
-            _.scroll = !!cfg.scroll && 'yes' || _.scroll || 'no';
+            _.scroll = cfg.scroll && 'yes' || _.scroll || 'no';
 
             _.trigger = U.isE(cfg.trigger) && cfg.trigger || _.trigger || null;
 
             _.maskable = U.isU(cfg.maskable) ? (U.isU(_.maskable) ? true : _.maskable) : !!cfg.maskable;
             _.closable = U.isU(cfg.closable) ? (U.isU(_.closable) ? true : _.closable) : !!cfg.closable;
-            _.prefixCls = !!cfg.prefixCls && U.isS(cfg.prefixCls)
+            _.prefixCls = cfg.prefixCls && U.isS(cfg.prefixCls)
                 && cfg.prefixCls || _.prefixCls || '';
         },
         _bind:function(){
@@ -281,7 +296,7 @@
         show:function(url){
             var _ = this;
 
-            if(U.isS(url)){
+            if(U.isS(url) && !_.srcNode){
                 _._iframe && (_._iframe.src = url) || (_._iframe = D.c('iframe',{
                     'src':url,
                     'width':'100%',
