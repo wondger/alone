@@ -7,7 +7,7 @@
  * @todo:
  * @changelog:
  */
-(function(doc,docE,win,undefined){
+!function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase();
 
     //util
@@ -37,7 +37,7 @@
          * window,document,document.documentElement,element
          */
         isDOM:function(o){
-            return o === win || o === doc || o === docE || U.isE();
+            return o === win || o === doc || o === rt || U.isE();
         },
         isStrict:doc.compatMode === 'CSS1Compat',
         each:function(arr,fn){
@@ -59,10 +59,10 @@
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
         }
-    };
+    },
 
     //DOM
-    var D = {
+    D = {
         //create
         c:function(tag,attr){
             if(!U.isS(tag)) return;
@@ -114,7 +114,7 @@
         vs:function(){
             return U.ua.ie
                 ? (U.isStrict
-                        ? {width:docE.clientWidth,height:docE.clientHeight}
+                        ? {width:rt.clientWidth,height:rt.clientHeight}
                         : {width:doc.body.clientWidth,height:doc.body.clientHeight})
                 : {width:win.innerWidth,height:win.innerHeight};
         },
@@ -127,10 +127,12 @@
         },
         //scrollTop
         st:function(){
-            return win.pageYOffset || docE.scrollTop || doc.body.scrollTop;
+            return win.pageYOffset || rt.scrollTop || doc.body.scrollTop;
         }
-    };
-    var E = Event = {
+    },
+
+    //Event
+    E = {
         on:function(ele,type,handle){
             var type = /^(on)/.test(type) ? type.substr(2) : type;
             if(ele.addEListener){
@@ -150,25 +152,25 @@
                 fn.call(_);
             });
         }
-    };
+    },
 
-    var _Pop = function(cfg){
+    Pop = function(cfg){
         var _ = this;
 
         //set configuration
         _._cfg(cfg);
 
-
         //private property
         _._pop,_._close,_._iframe,_._mask,_._style;
 
         _.evt = {close:[],show:[]};
+    },
+
+    _Pop = function(cfg){
+        return new Pop(cfg);
     };
 
-    var Pop = function(cfg){
-        return new _Pop(cfg);
-    };
-    _Pop.prototype = {
+    Pop.prototype = {
         //base css
         _bc:[
             '.alone_pop{',
@@ -305,6 +307,10 @@
             _.closable && _._close && (E.on(_._close,'click',function(){
                 _.hide();
 
+                /*
+                 * maybe sometimes you should use setTimeout to invoke handler
+                 * in fuck ie6
+                 */
                 E.fire(_.evt.close,_);
             }));
 
@@ -382,5 +388,5 @@
         }
     };
 
-    win.Pop = Pop;
-})(document,document.documentElement,window);
+    win.Pop = _Pop;
+}(document,document.documentElement,window);
