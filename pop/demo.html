@@ -6,26 +6,34 @@
 <meta name="author" content="wondger" />
 <style type="text/css">
     body{margin:0;padding:0;}
-    #page{height:2000px;}
+    #page{width:960px;margin:0 auto;font:normal 12px/1.6 tahoma,aril;}
+    .msg{color:#FFF;font-weight:bold;padding:10px;background-color:#333;}
     .sex_alone_pop{background-color:#FFF;}
     .sex_alone_pop_x{background:url(images/x.png) no-repeat 50%;}
         .sex_alone_pop_x:hover{background-color:#333;}
     .src_node{display:none;width:300px;font-size:14px;border:2px solid #DDD;}
         .src_node h2{height:20px;line-height:20px;font-size:14px;font-weight:bold;}
+        .src_cnt{padding:10px;}
+        .sex_alone_pop .src_cnt{padding-top:30px;}
 </style>
 <script type="text/javascript" src="pop.source.js"></script>
 </head>
 <body>
 <div id="page">
-    <select name="" id="">
-        <option value="">item1</option>
-        <option value="">item2</option>
-        <option value="">item3</option>
-        <option value="">item4</option>
-    </select>
-    <button class="btn" onclick="pop.show('http://fedtool.com/')">popup</button>
+    <h1>Pop</h1>
+    <div class="msg" id="J_msg">
+        Here will show some message.
+    </div>
+    <h2>type:overlay(default)</h2>
+    <div class="mod">
+        <button class="btn" onclick="pop1.show()">pop iframe</button>
+    </div>
+    <h2>type:dialog</h2>
+    <div class="mod">
+        <button class="btn" onclick="pop2.show()">pop srcNode</button>
+    </div>
     <div id="J_src_node" class="src_node">
-        <div style="padding:10px;">
+        <div class="src_cnt">
             <h2>Test for src_node</h2>
             <p>alone is a components library based on native JavaScript.</p>
             <p>It's don't need other dependencies.</p>
@@ -33,32 +41,37 @@
     </div>
 </div>
 <script>
-    var pop = Pop({
-        /*
-        prefixCls:'sex_',
-        url:'http://fedtool.com/',
-        maskable:true,
-        width:400,
-        height:300,
-        scroll:false
-        */
-    }).render({
-        prefixCls:'sex_',
-        //url:'http://fedtool.com/',
-        srcNode:document.getElementById('J_src_node'),
-        maskable:true,
-        width:400,
-        height:300,
-        scroll:false
-    }).on('close',function(){
-        try{
-            console.info('close trigger!');
-        }catch(e){}
-    }).on('show',function(){
-        try{
-            console.info('show trigger!');
-        }catch(e){}
-    });
+    var msgE = document.getElementById('J_msg')
+        msg = function(msg){
+            msgE.innerHTML = msg;
+        },
+        pop1 = Pop().render({
+            prefixCls:'sex_',
+            url:'http://fedtool.com/',
+            maskable:true,
+            width:400,
+            height:300,
+            scroll:false
+        }).on('close',function(){
+            msg('pop1 close event trigger!')
+        }).on('show',function(){
+            msg('pop1 show event trigger!')
+        }),
+        pop2 = Pop({
+            type:'dialog',
+            title:'srcNode'
+        }).render({
+            prefixCls:'sex_',
+            srcNode:document.getElementById('J_src_node'),
+            maskable:true,
+            width:400,
+            height:300,
+            scroll:false
+        }).on('close',function(){
+            msg('pop2 close event trigger!')
+        }).on('show',function(){
+            msg('pop2 show event trigger!')
+        });
 </script>
 </body>
 </html>
