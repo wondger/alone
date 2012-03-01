@@ -297,11 +297,11 @@
         _bind:function(){
             var _ = this;
             E.on(win,'resize',function(){
-                _.fixed(true);
+                _.fixed();
             });
 
             E.on(win,'scroll',function(){
-                _.fixed(true);
+                _.fixed();
             });
 
             _.closable && _._close && (E.on(_._close,'click',function(){
@@ -316,7 +316,7 @@
 
             return _;
         },
-        fixed:function(refixed){
+        fixed:function(){
             var _ = this;
             var vs = D.vs(),
                 ws = D.ws();
@@ -328,8 +328,6 @@
 
                 U.ua.ie6 && (_._pop.style.top = D.st() + offsetTop + 'px');
             }
-
-            if(!!refixed) return;
 
             if(_._mask){
                 _._mask.style.width = ws.width + 'px';
