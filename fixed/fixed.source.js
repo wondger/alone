@@ -128,8 +128,8 @@
             //fixed invoke before width set because the scrollbar will effect
             //some calculate in ie6
             this.fixed();
-            this.width && (this.el.style.width = this.width + 'px');
-            this.height && (this.el.style.height = this.height + 'px');
+            this.el.style.width = this.width + 'px';
+            this.el.style.height = this.height + 'px';
 
             this.el.style.position = U.ua.ie6 ? 'absolute' : 'fixed';
 
