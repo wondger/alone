@@ -116,7 +116,7 @@
                 ? (U.isStrict
                         ? {width:rt.clientWidth,height:rt.clientHeight}
                         : {width:doc.body.clientWidth,height:doc.body.clientHeight})
-                : {width:win.innerWidth,height:win.innerHeight};
+                : {width:rt.clientWidth,height:rt.clientHeight};
         },
         //windowSize
         ws:function(){
