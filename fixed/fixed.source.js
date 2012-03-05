@@ -126,7 +126,7 @@
             if(!this.el) return this;
 
             //fixed invoke before width set because the scrollbar will effect
-            //some calculate
+            //some calculate in ie6
             this.fixed();
             this.width && (this.el.style.width = this.width + 'px');
             this.height && (this.el.style.height = this.height + 'px');
