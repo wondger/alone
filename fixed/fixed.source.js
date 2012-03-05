@@ -5,7 +5,7 @@
  * @date:2012-03-05
  * @param:
  * @todo:
- * @changelog:
+ * @changewinlog:
  */
 !function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase();
@@ -74,8 +74,8 @@
         //windowSize
         ws:function(){
             return {
-                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth),
-                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight)
+                width:Math.max(rt.scrollWidth,doc.body.scrollWidth),
+                height:Math.max(rt.scrollHeight,doc.body.scrollHeight)
             }
         },
         //scrollTop
@@ -108,9 +108,6 @@
     Fixed = function(el,cfg){
         this.el = U.isE(el) ? el : null;
         this.cfg = cfg = U.isO(cfg) ? cfg : {};
-        this.width = U.isS(cfg.width) && this._cw(cfg.width)
-            || Number(cfg.width)
-            || (this.el && this.el.scrollWidth);
         this.height = Number(cfg.height) || (this.el && this.el.scrollHeight);
         this.left = U.isU(cfg.left) ? undefined : (Number(cfg.left) || 0);
         this.right = U.isU(cfg.right) ? undefined : (Number(cfg.right) || 0);
@@ -125,16 +122,20 @@
         init:function(){
             if(!this.el) return this;
 
+            this._setWidth();
             //fixed invoke before width set because the scrollbar will effect
             //some calculate in ie6
-            this.fixed();
-            this.el.style.width = this.width + 'px';
+            var self = this;
+            //bugfix by using setTimeout
+            setTimeout(function(){
+                self.fixed();
+            },1)
             this.el.style.height = this.height + 'px';
 
             this.el.style.position = U.ua.ie6 ? 'absolute' : 'fixed';
 
-            var self = this;
             E.on(win,'resize',function(){
+                self._setWidth();
                 self.fixed();
             });
             U.ua.ie6 && E.on(win,'scroll',function(){
@@ -144,7 +145,7 @@
         fixed:function(scroll){
             var vs = D.vs(),sp = D.sp();
 
-            this.el.style.top = sp.top + (!U.isU(this.top) ? this.top
+            this.el.style.top = (U.ua.ie6 ? sp.top : 0) + (!U.isU(this.top) ? this.top
                                     : (!U.isU(this.bottom)
                                             ? vs.height - this.bottom - this.height
                                             : 0)) + 'px';
@@ -163,6 +164,14 @@
             var m = parseFloat(s.replace(/^(\d+)%$/,'$1'));
 
             return (D.ws().width * m)/100;
+        },
+        //reset width when resize
+        _setWidth:function(){
+            this.width = U.isS(this.cfg.width) && this._cw(this.cfg.width)
+                || Number(this.cfg.width)
+                || (this.el && this.el.scrollWidth);
+
+            this.el.style.width = this.width + 'px';
         }
     };
 
