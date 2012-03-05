@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8" />
+<title>fixed | alone</title>
+<meta name="author" content="wondger" />
+<style type="text/css">
+    body{margin:0;padding:0;}
+    #page{width:960px;margin:0 auto;font:normal 12px/1.6 tahoma,aril;}
+    .bot_bar{color:#000;font-weight:bold;padding:10px;border:1px solid #666;border-bottom:none;background-color:#999;}
+</style>
+<script type="text/javascript" src="fixed.source.js"></script>
+</head>
+<body>
+<div id="page" style="height:2000px;">
+    <h1>Fixed</h1>
+    <div id="J_bot_bar">
+        <div class="bot_bar">
+            This bar will fix at the bottom of the page in all browsers!
+        </div>
+    </div>
+</div>
+<script>
+    var fixed = Fixed(document.getElementById('J_bot_bar'),{
+        width:'100%',
+        left:0,
+        bottom:0
+    }).init();
+</script>
+</body>
+</html>
