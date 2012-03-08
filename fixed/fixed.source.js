@@ -106,33 +106,34 @@
     },
 
     Fixed = function(el,cfg){
-        this.el = U.isE(el) ? el : null;
-        this.cfg = cfg = U.isO(cfg) ? cfg : {};
-        this.height = Number(cfg.height) || (this.el && this.el.scrollHeight);
-        this.left = U.isU(cfg.left) ? undefined : (Number(cfg.left) || 0);
-        this.right = U.isU(cfg.right) ? undefined : (Number(cfg.right) || 0);
-        this.top = U.isU(cfg.top) ? undefined : (Number(cfg.top) || 0);
-        this.bottom = U.isU(cfg.bottom) ? undefined : (Number(cfg.bottom) || 0);
-    },
-    _Fixed = function(el,cfg){
-        return new Fixed(el,cfg);
+        var _ = this;
+        if(!(_ instanceof Fixed)) return new Fixed(el,cfg);
+
+        _.el = U.isE(el) ? el : null;
+        _.cfg = cfg = U.isO(cfg) ? cfg : {};
+        _.height = Number(cfg.height) || (_.el && _.el.scrollHeight);
+        _.left = U.isU(cfg.left) ? undefined : (Number(cfg.left) || 0);
+        _.right = U.isU(cfg.right) ? undefined : (Number(cfg.right) || 0);
+        _.top = U.isU(cfg.top) ? undefined : (Number(cfg.top) || 0);
+        _.bottom = U.isU(cfg.bottom) ? undefined : (Number(cfg.bottom) || 0);
     };
 
     Fixed.prototype = {
         init:function(){
-            if(!this.el) return this;
+            var _ = this;
+            if(!_.el) return _;
 
-            this._setWidth();
+            _._setWidth();
             //fixed invoke before width set because the scrollbar will effect
             //some calculate in ie6
-            var self = this;
+            var self = _;
             //bugfix by using setTimeout
             setTimeout(function(){
                 self.fixed();
             },1)
-            this.el.style.height = this.height + 'px';
+            _.el.style.height = _.height + 'px';
 
-            this.el.style.position = U.ua.ie6 ? 'absolute' : 'fixed';
+            _.el.style.position = U.ua.ie6 ? 'absolute' : 'fixed';
 
             E.on(win,'resize',function(){
                 self._setWidth();
@@ -143,18 +144,19 @@
             });
         },
         fixed:function(scroll){
+            var _ = this;
             var vs = D.vs(),sp = D.sp();
 
-            this.el.style.top = (U.ua.ie6 ? sp.top : 0) + (!U.isU(this.top) ? this.top
-                                    : (!U.isU(this.bottom)
-                                            ? vs.height - this.bottom - this.height
+            _.el.style.top = (U.ua.ie6 ? sp.top : 0) + (!U.isU(_.top) ? _.top
+                                    : (!U.isU(_.bottom)
+                                            ? vs.height - _.bottom - _.height
                                             : 0)) + 'px';
 
             if(!!scroll) return;
 
-            this.el.style.left = sp.left + (!U.isU(this.left) ? this.left
-                                    : (!U.isU(this.right)
-                                            ? vs.width - this.right - this.width
+            _.el.style.left = sp.left + (!U.isU(_.left) ? _.left
+                                    : (!U.isU(_.right)
+                                            ? vs.width - _.right - _.width
                                             : 0)) + 'px';
         },
         //convert width percent size
@@ -167,13 +169,14 @@
         },
         //reset width when resize
         _setWidth:function(){
-            this.width = U.isS(this.cfg.width) && this._cw(this.cfg.width)
-                || Number(this.cfg.width)
-                || (this.el && this.el.scrollWidth);
+            var _ = this;
+            _.width = U.isS(_.cfg.width) && _._cw(_.cfg.width)
+                || Number(_.cfg.width)
+                || (_.el && _.el.scrollWidth);
 
-            this.el.style.width = this.width + 'px';
+            _.el.style.width = _.width + 'px';
         }
     };
 
-    win.Fixed = _Fixed;
+    win.Fixed = Fixed;
 }(document,document.documentElement,window)

@@ -157,6 +157,8 @@
     Pop = function(cfg){
         var _ = this;
 
+        if(!(_ instanceof Pop)) return new Pop(cfg);
+
         //set configuration
         _._cfg(cfg);
 
@@ -164,10 +166,6 @@
         _._pop,_._close,_._iframe,_._mask,_._style;
 
         _.evt = {close:[],show:[]};
-    },
-
-    _Pop = function(cfg){
-        return new Pop(cfg);
     };
 
     Pop.prototype = {
@@ -386,5 +384,5 @@
         }
     };
 
-    win.Pop = _Pop;
+    win.Pop = Pop;
 }(document,document.documentElement,window);
