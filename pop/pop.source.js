@@ -137,8 +137,8 @@
             var type = /^(on)/.test(type) ? type.substr(2) : type;
             if(ele.addEListener){
                 ele.addEListener(type,function(){handle.call(ele)},false);
-            }else if(ele.attachE){
-                ele.attachE('on'+type,function(){handle.call(ele)});
+            }else if(ele.attachEvent){
+                ele.attachEvent('on'+type,function(){handle.call(ele)});
             }else{
                 var _handle = ele['on'+type];
                 ele['on'+type] = function(){
