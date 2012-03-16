@@ -26,7 +26,7 @@
     </div>
     <h2>type:overlay(default)</h2>
     <div class="mod">
-        <button class="btn" onclick="pop1.show()">pop iframe</button>
+        <button class="btn" id="J_btn_iframe">pop iframe</button>
     </div>
     <h2>type:dialog</h2>
     <div class="mod">
@@ -49,6 +49,8 @@
             prefixCls:'sex_',
             url:'http://fedtool.com/',
             maskable:true,
+            trigger:document.getElementById('J_btn_iframe'),
+            triggerEvent:'click',
             width:400,
             height:300,
             scroll:false

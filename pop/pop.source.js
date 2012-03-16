@@ -5,6 +5,7 @@
  * @date:2012-02-23
  * @param:
  * @todo:
+ *      1.优化重复mask问题
  * @changelog:
  */
 !function(doc,rt,win,undefined){
@@ -121,8 +122,8 @@
         //windowSize
         ws:function(){
             return {
-                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth),
-                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight)
+                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth,rt.scrollWidth),
+                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight,rt.scrollHeight)
             }
         },
         //scrollTop
@@ -163,7 +164,7 @@
         _._cfg(cfg);
 
         //private property
-        _._pop,_._close,_._iframe,_._mask,_._style;
+        _._pop,_._close,_._iframe,_._mask,_._style,_._rendered;
 
         _.evt = {close:[],show:[]};
     };
@@ -267,6 +268,8 @@
 
             _._bind();
 
+            _._rendered = true;
+
             return _;
         },
         _cfg:function(cfg){
@@ -286,6 +289,7 @@
             _.scroll = cfg.scroll && 'yes' || _.scroll || 'no';
 
             _.trigger = U.isE(cfg.trigger) && cfg.trigger || _.trigger || null;
+            _.triggerEvent = U.isS(cfg.triggerEvent) && cfg.triggerEvent || _.triggerEvent || '';
 
             _.maskable = U.isU(cfg.maskable) ? (U.isU(_.maskable) ? true : _.maskable) : !!cfg.maskable;
             _.closable = U.isU(cfg.closable) ? (U.isU(_.closable) ? true : _.closable) : !!cfg.closable;
@@ -312,6 +316,10 @@
                 E.fire(_.evt.close,_);
             }));
 
+            _.trigger && _.triggerEvent && E.on(_.trigger,_.triggerEvent,function(){
+                !_._rendered && _.render().show() || _.show();
+            });
+
             return _;
         },
         fixed:function(){
@@ -336,6 +344,9 @@
         },
         show:function(url){
             var _ = this;
+
+            //show()前必须渲染，不自动调用render()
+            //!_._rendered && _.render();
 
             if(U.isS(url) && !_.srcNode){
                 _._iframe && (_._iframe.src = url) || (_._iframe = D.c('iframe',{
@@ -370,6 +381,8 @@
             _._mask && _._mask.parentNode.removeChild(_._mask);
             _._close && _._close.parentNode.removeChild(_._close);
             _._style && _._style.parentNode.removeChild(_._style);
+
+            _._rendered = false;
 
             return _;
         },
