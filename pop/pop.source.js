@@ -5,7 +5,7 @@
  * @date:2012-02-23
  * @param:
  * @todo:
- *      1.优化重复mask问题
+ *      1.优化重复mask问题 [2012-03-19 finished]
  * @changelog:
  */
 !function(doc,rt,win,undefined){
@@ -155,6 +155,11 @@
         }
     },
 
+    _cache = {
+        mask:null,
+        style:null
+    },
+
     Pop = function(cfg){
         var _ = this;
 
@@ -170,8 +175,8 @@
     };
 
     Pop.prototype = {
-        //base css
-        _bc:[
+        //css
+        _css:[
             '.alone_pop{',
             'display:none;',
             'position:{{position}};width:{{width}}px;height:{{height}}px;',
@@ -188,10 +193,7 @@
             'width:100%;height:100%;background:#000;',
             'opacity:0.5;filter:alpha(opacity=50);',
             'z-index:99999',
-            '}'
-        ],
-        //dialog css
-        _dc:[
+            '}',
             '.alone_pop_hd{',
             'width:{{width_hd}}px;height:24px;line-height:24px;padding:0 5px;',
             'position:absolute;left:0;top:0;z-index:1;',
@@ -205,19 +207,17 @@
             _._cfg(cfg);
 
             //invoke destroy when every render
-            _.destroy();
+            _.destroy(true);
 
             var f = doc.createDocumentFragment();
 
-            _._style = D.as(U.ss(_._bc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
-                    + (_.type==='dialog'
-                    ? _._dc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
-                    : ''),{
+            _cache.style = _._style = _cache.style
+                || (D.as(U.ss(_._css.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1'),{
                         width:_.width,
                         width_hd:_.width-10,
                         height:_.height,
                         position:U.ua.ie6?'absolute':'fixed'
-                    }));
+                    })));
 
             (doc.head || document.getElementsByTagName('head')[0]).appendChild(_._style);
 
@@ -242,9 +242,9 @@
                 'href':'javascript:void(0)',
                 'class':_.prefixCls+'alone_pop_x'
             }));
-            _._mask = _.maskable
+            _cache.mask = _._mask = _cache.mask ||(_.maskable
                 ? D.c('div',{'class':_.prefixCls+'alone_mask'})
-                : null;
+                : null);
 
             //ie6 select window module bugfix
             //can not display mask's backgroundColor
@@ -374,13 +374,16 @@
 
             return _;
         },
-        destroy:function(){
+        destroy:function(soft){
             var _ = this;
             _.srcNode ? D.rc(_.srcNode,_.prefixCls+'alone_pop')
                 : (_._pop && _._pop.parentNode.removeChild(_._pop));
-            _._mask && _._mask.parentNode.removeChild(_._mask);
             _._close && _._close.parentNode.removeChild(_._close);
-            _._style && _._style.parentNode.removeChild(_._style);
+
+            if(!soft){
+                _._mask && _._mask.parentNode.removeChild(_._mask);
+                _._style && _._style.parentNode.removeChild(_._style);
+            }
 
             _._rendered = false;
 
