@@ -45,7 +45,7 @@
             if(!U.isA(arr) || !U.isF(fn)) return;
             
             var i = 0,l = arr.length;
-            while(i<l,fn.call(null,arr[i++]));
+            while(i<l) fn.call(null,arr[i++]);
         },
         trim:function(s){
             return s.replace(/^\s+/,'').replace(/\s+$/,'');
