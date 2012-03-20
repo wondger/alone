@@ -214,8 +214,8 @@
             _cache.style = _._style = _cache.style
                 || (D.as(U.ss(_._css.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1'),{
                         width:_.width,
-                        width_hd:_.width-10,
-                        height:_.height,
+                        width_hd:_.width - 10,
+                        height:_.type==='dialog' ? _.height - 24 : _.height,
                         position:U.ua.ie6?'absolute':'fixed'
                     })));
 
