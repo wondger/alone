@@ -5,7 +5,7 @@
  * @date:2012-03-05
  * @param:
  * @todo:
- * @changewinlog:
+ * @changenlog:
  */
 !function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase();
