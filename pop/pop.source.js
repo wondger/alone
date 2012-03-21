@@ -5,6 +5,7 @@
  * @date:2012-02-23
  * @param:
  * @todo:
+ *      1.优化重复mask问题 [2012-03-19 finished]
  * @changelog:
  */
 !function(doc,rt,win,undefined){
@@ -44,7 +45,7 @@
             if(!U.isA(arr) || !U.isF(fn)) return;
             
             var i = 0,l = arr.length;
-            while(i<l,fn.call(null,arr[i++]));
+            while(i<l) fn.call(null,arr[i++]);
         },
         trim:function(s){
             return s.replace(/^\s+/,'').replace(/\s+$/,'');
@@ -121,8 +122,8 @@
         //windowSize
         ws:function(){
             return {
-                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth),
-                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight)
+                width:Math.max(doc.body.clientWidth,doc.body.scrollWidth,rt.scrollWidth),
+                height:Math.max(doc.body.clientHeight,doc.body.scrollHeight,rt.scrollHeight)
             }
         },
         //scrollTop
@@ -137,8 +138,8 @@
             var type = /^(on)/.test(type) ? type.substr(2) : type;
             if(ele.addEListener){
                 ele.addEListener(type,function(){handle.call(ele)},false);
-            }else if(ele.attachE){
-                ele.attachE('on'+type,function(){handle.call(ele)});
+            }else if(ele.attachEvent){
+                ele.attachEvent('on'+type,function(){handle.call(ele)});
             }else{
                 var _handle = ele['on'+type];
                 ele['on'+type] = function(){
@@ -154,6 +155,11 @@
         }
     },
 
+    _cache = {
+        mask:null,
+        style:null
+    },
+
     Pop = function(cfg){
         var _ = this;
 
@@ -163,14 +169,14 @@
         _._cfg(cfg);
 
         //private property
-        _._pop,_._close,_._iframe,_._mask,_._style;
+        _._pop,_._close,_._iframe,_._mask,_._style,_._rendered;
 
         _.evt = {close:[],show:[]};
     };
 
     Pop.prototype = {
-        //base css
-        _bc:[
+        //css
+        _css:[
             '.alone_pop{',
             'display:none;',
             'position:{{position}};width:{{width}}px;height:{{height}}px;',
@@ -187,10 +193,7 @@
             'width:100%;height:100%;background:#000;',
             'opacity:0.5;filter:alpha(opacity=50);',
             'z-index:99999',
-            '}'
-        ],
-        //dialog css
-        _dc:[
+            '}',
             '.alone_pop_hd{',
             'width:{{width_hd}}px;height:24px;line-height:24px;padding:0 5px;',
             'position:absolute;left:0;top:0;z-index:1;',
@@ -204,19 +207,17 @@
             _._cfg(cfg);
 
             //invoke destroy when every render
-            _.destroy();
+            _.destroy(true);
 
             var f = doc.createDocumentFragment();
 
-            _._style = D.as(U.ss(_._bc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
-                    + (_.type==='dialog'
-                    ? _._dc.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1')
-                    : ''),{
+            _cache.style = _._style = _cache.style
+                || (D.as(U.ss(_._css.join('').replace(/\.(alone_)/g,'.'+_.prefixCls+'$1'),{
                         width:_.width,
-                        width_hd:_.width-10,
-                        height:_.height,
+                        width_hd:_.width - 10,
+                        height:_.type==='dialog' ? _.height - 24 : _.height,
                         position:U.ua.ie6?'absolute':'fixed'
-                    }));
+                    })));
 
             (doc.head || document.getElementsByTagName('head')[0]).appendChild(_._style);
 
@@ -241,9 +242,9 @@
                 'href':'javascript:void(0)',
                 'class':_.prefixCls+'alone_pop_x'
             }));
-            _._mask = _.maskable
+            _cache.mask = _._mask = _cache.mask ||(_.maskable
                 ? D.c('div',{'class':_.prefixCls+'alone_mask'})
-                : null;
+                : null);
 
             //ie6 select window module bugfix
             //can not display mask's backgroundColor
@@ -267,6 +268,8 @@
 
             _._bind();
 
+            _._rendered = true;
+
             return _;
         },
         _cfg:function(cfg){
@@ -286,6 +289,7 @@
             _.scroll = cfg.scroll && 'yes' || _.scroll || 'no';
 
             _.trigger = U.isE(cfg.trigger) && cfg.trigger || _.trigger || null;
+            _.triggerEvent = U.isS(cfg.triggerEvent) && cfg.triggerEvent || _.triggerEvent || '';
 
             _.maskable = U.isU(cfg.maskable) ? (U.isU(_.maskable) ? true : _.maskable) : !!cfg.maskable;
             _.closable = U.isU(cfg.closable) ? (U.isU(_.closable) ? true : _.closable) : !!cfg.closable;
@@ -312,6 +316,10 @@
                 E.fire(_.evt.close,_);
             }));
 
+            _.trigger && _.triggerEvent && E.on(_.trigger,_.triggerEvent,function(){
+                !_._rendered && _.render().show() || _.show();
+            });
+
             return _;
         },
         fixed:function(){
@@ -336,6 +344,9 @@
         },
         show:function(url){
             var _ = this;
+
+            //show()前必须渲染，不自动调用render()
+            //!_._rendered && _.render();
 
             if(U.isS(url) && !_.srcNode){
                 _._iframe && (_._iframe.src = url) || (_._iframe = D.c('iframe',{
@@ -363,13 +374,18 @@
 
             return _;
         },
-        destroy:function(){
+        destroy:function(soft){
             var _ = this;
             _.srcNode ? D.rc(_.srcNode,_.prefixCls+'alone_pop')
                 : (_._pop && _._pop.parentNode.removeChild(_._pop));
-            _._mask && _._mask.parentNode.removeChild(_._mask);
             _._close && _._close.parentNode.removeChild(_._close);
-            _._style && _._style.parentNode.removeChild(_._style);
+
+            if(!soft){
+                _._mask && _._mask.parentNode.removeChild(_._mask);
+                _._style && _._style.parentNode.removeChild(_._style);
+            }
+
+            _._rendered = false;
 
             return _;
         },
