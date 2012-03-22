@@ -59,12 +59,13 @@
     },
     Cookie = {
         _serialize:function(cfg){
-            var cfg = U.mix({
+            //document.cookie会将serialize字符串中的第一个key=value作为cookie存储
+            var cfg = U.mix(cfg,{
                 expires:new Date().toGMTString(),
                 path:'',
                 domain:'',
                 secure:false
-            },cfg,true);
+            });
 
             return U.join(cfg,function(v,k){return !!v},'; ');
         },
