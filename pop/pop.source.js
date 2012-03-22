@@ -204,7 +204,7 @@
         render:function(cfg){
             var _ = this;
 
-            _._cfg(cfg);
+            !!cfg && _._cfg(cfg);
 
             //invoke destroy when every render
             _.destroy(true);
