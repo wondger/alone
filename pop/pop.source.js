@@ -169,7 +169,7 @@
         _._cfg(cfg);
 
         //private property
-        _._pop,_._close,_._iframe,_._mask,_._style,_._rendered;
+        _._pop,_._close,_._iframe,_._mask,_._style,_._rendered,_._styleChanged;
 
         _.evt = {close:[],show:[]};
     };
@@ -207,7 +207,7 @@
             !!cfg && _._cfg(cfg);
 
             //invoke destroy when every render
-            _.destroy(true);
+            _._styleChanged ? _.destroy() : _.destroy(true);
 
             var f = doc.createDocumentFragment();
 
@@ -277,6 +277,8 @@
             var _ = this;
             _.cfg = cfg = cfg && cfg || {};
 
+            _._styleChanged = _._checkStyleChanged(cfg);
+
             //pop type:dialog,overlay(default)
             _.type = cfg.type && U.isS(cfg.type) && cfg.type.toLowerCase() || _.type || '';
 
@@ -322,6 +324,13 @@
             });
 
             return _;
+        },
+        //根据cfg中width、height、type判断是否需要更新样式
+        _checkStyleChanged:function(cfg){
+            var _ = this,cfg = cfg || {};
+            return (U.isU(cfg.width) && cfg.width !== _.width)
+                    || (U.isU(cfg.height) && cfg.height!== _.height)
+                    || (U.isU(cfg.type) && cfg.type!== _.type);
         },
         fixed:function(){
             var _ = this;
@@ -384,6 +393,7 @@
             if(!soft){
                 _._mask && _._mask.parentNode.removeChild(_._mask);
                 _._style && _._style.parentNode.removeChild(_._style);
+                _cache.mask = _cache.style[_.style] = _._mask = _._style = null;
             }
 
             _._rendered = false;
