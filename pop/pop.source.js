@@ -393,7 +393,7 @@
             if(!soft){
                 _._mask && _._mask.parentNode.removeChild(_._mask);
                 _._style && _._style.parentNode.removeChild(_._style);
-                _cache.mask = _cache.style[_.style] = _._mask = _._style = null;
+                _cache.mask = _cache.style = _._mask = _._style = null;
             }
 
             _._rendered = false;
