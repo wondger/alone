@@ -242,9 +242,10 @@
                 'href':'javascript:void(0)',
                 'class':_.prefixCls+'alone_pop_x'
             }));
-            _cache.mask = _._mask = _cache.mask ||(_.maskable
-                ? D.c('div',{'class':_.prefixCls+'alone_mask'})
-                : null);
+            _cache.mask = _.maskable && (_cache.mask
+                || D.c('div',{'class':_.prefixCls+'alone_mask'}))
+                || null;
+            _._mask = _.maskable && _cache.mask || null;
 
             //ie6 select window module bugfix
             //can not display mask's backgroundColor
