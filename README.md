@@ -23,11 +23,11 @@
 </ul>
 <h3>Method</h3>
 <ul>
-    <li>Pop.render(cfg)</li>
-    <li>Pop.show(url)</li>
-    <li>Pop.hide()</li>
-    <li>Pop.on(event,handler)</li>
-    <li>Pop.destroy(soft)</li>
+    <li>render(cfg)</li>
+    <li>show(url)</li>
+    <li>hide()</li>
+    <li>on(event,handler)</li>
+    <li>destroy(soft)</li>
 </ul>
 <h3>Event</h3>
 <ul>
