@@ -9,7 +9,7 @@
  * @changelog:
  */
 !function(doc,rt,win,undefined){
-    var ua = navigator.userAgent.toLowerCase();
+    var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
 
     //util
     var U = {
@@ -17,19 +17,19 @@
             return o === void 0;
         },
         isS:function(o){
-            return !U.isU(o) && o.constructor == String;
+            return ts.call(o) === '[object String]';
         },
         isN:function(o){
-            return !U.isU(o) && o.constructor == Number;
+            return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return !U.isU(o) && o.constructor == Object;
+            return ts.call(o) === '[object Object]';
         },
         isF:function(o){
-            return !U.isU(o) && o.constructor == Function;
+            return ts.call(o) === '[object Function]';
         },
         isA:function(o){
-            return !U.isU(o) && o.constructor == Array;
+            return ts.call(o) === '[object Array]';
         },
         isE:function(o){
             return !U.isU(o) && !!(o && o.nodeType && o.nodeType == 1);

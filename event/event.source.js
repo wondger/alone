@@ -8,29 +8,27 @@
  * @changelog:
  */
 !function(doc,rt,win,undefined){
+    var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
+
+    //util
     var U = {
         isU:function(o){
             return o === void 0;
         },
         isS:function(o){
-            return !U.isU(o) && o.constructor == String;
+            return ts.call(o) === '[object String]';
         },
         isN:function(o){
-            return !U.isU(o) && o.constructor == Number;
+            return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return !U.isU(o) && o.constructor == Object;
+            return ts.call(o) === '[object Object]';
         },
         isF:function(o){
-            return !U.isU(o) && o.constructor == Function;
+            return ts.call(o) === '[object Function]';
         },
         isA:function(o){
-            return !U.isU(o) && o.constructor == Array;
-        },
-        inA:function(i,a){
-            if(!U.isA(a)) return -1;
-
-            //search array item
+            return ts.call(o) === '[object Array]';
         }
     },
     E = {
