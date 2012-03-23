@@ -8,7 +8,7 @@
  *      1.优化重复mask问题 [2012-03-19 finished]
  * @changelog:
  */
-!function(doc,rt,win,undefined){
+(function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
 
     //util
@@ -412,4 +412,4 @@
     };
 
     win.Pop = Pop;
-}(document,document.documentElement,window);
+})(document,document.documentElement,window);

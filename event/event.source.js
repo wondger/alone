@@ -7,7 +7,7 @@
  * @todo:
  * @changelog:
  */
-!function(doc,rt,win,undefined){
+(function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
 
     //util
@@ -68,4 +68,4 @@
         fire:function(type){
         }
     }
-}(document,document.documentElement,window)
+})(document,document.documentElement,window)

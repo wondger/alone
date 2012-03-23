@@ -7,7 +7,7 @@
  * @todo:
  * @changelog:
  */
-!function(doc,win){
+(function(doc,win){
     var ua = win.navigator.userAgent,ts = Object.prototype.toString;
     var U = {
         isU:function(o){
@@ -246,4 +246,4 @@
     }
 
     win.Cookie = Cookie;
-}(document,window);
+})(document,window);

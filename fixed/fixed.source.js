@@ -7,7 +7,7 @@
  * @todo:
  * @changenlog:
  */
-!function(doc,rt,win,undefined){
+(function(doc,rt,win,undefined){
     var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
 
     //util
@@ -179,4 +179,4 @@
     };
 
     win.Fixed = Fixed;
-}(document,document.documentElement,window)
+})(document,document.documentElement,window)
