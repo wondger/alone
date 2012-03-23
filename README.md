@@ -52,7 +52,7 @@
 </ul>
 
 <h2>Cookie</h2>
-<p>Support SubCookie<a href="http://wondger.github.com/alone/cookie/demo.html" target="_blank">demo</a></p>
+<p>Support SubCookie <a href="http://wondger.github.com/alone/cookie/demo.html" target="_blank">demo</a></p>
 <h3>Method</h3>
 <ul>
     <li>Cookie.set({name:value[,expires:GMTString,path:'',domain:'',secure:'']}[,main])</li>
