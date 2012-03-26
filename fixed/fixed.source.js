@@ -179,5 +179,5 @@
         }
     };
 
-    win.Alone = {'Fixed':Fixed};
+    U.isO(win.Alone) ? win.Alone.Fixed = Fixed : win.Alone = {'Fixed':Fixed};
 })(document,document.documentElement,window)

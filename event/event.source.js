@@ -96,5 +96,5 @@
         }
     };
 
-    win.Alone = {'Event':Event};
+    U.isO(win.Alone) ? win.Alone.Event = Event : win.Alone = {'Event':Event};
 })(document,document.documentElement,window)

@@ -245,5 +245,5 @@
         }
     };
 
-    win.Alone = {'Cookie':Cookie};
+    U.isO(win.Alone) ? win.Alone.Cookie = Cookie : win.Alone = {'Cookie':Cookie};
 })(document,window);

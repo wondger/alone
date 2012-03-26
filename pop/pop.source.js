@@ -412,5 +412,5 @@
         }
     };
 
-    win.Alone = {'Pop':Pop};
+    U.isO(win.Alone) ? win.Alone.Pop = Pop: win.Alone = {'Pop':Pop};
 })(document,document.documentElement,window);
