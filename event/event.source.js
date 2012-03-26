@@ -30,11 +30,14 @@
         isA:function(o){
             return ts.call(o) === '[object Array]';
         },
+        isE:function(o){
+            return !U.isU(o) && !!(o && o.nodeType && o.nodeType == 1);
+        },
         each:function(o,fn,scope){
-            if(!U.isO(o) || !U.isA(o) || !U.isF(fn)) return;
+            if((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) return;
 
             for(var k in o){
-                fn.call(scrop || null,o[k],k);
+                fn.call(scope||null,o[k],k);
             }
         }
     },
@@ -82,7 +85,7 @@
         __stdEvts__:{},
         __cstEvts__:{},
         on:function(el,type,handle){
-            if(!U.isS(type) || !U.isF(handle)) return false;
+            if(!U.isS(type) || !U.isF(handle)) return this;
             if(E.std.indexOf(type)>-1){
                 E.on(el,type,handle);
             }else{
@@ -91,8 +94,24 @@
                 this.__cstEvts__[evtId][type] = this.__cstEvts__[evtId][type] || [];
                 this.__cstEvts__[evtId][type].push(handle);
             }
+
+            return this;
         },
-        fire:function(type){
+        fire:function(el,type){
+            if(!U.isE(el) || !U.isS(type)) return this;
+
+            if(E.std.indexOf(type)>-1){
+            }else{
+                var handles = el[this.evtId] ? this.__cstEvts__[el[this.evtId]][type] || null : null;
+
+                if(!handles) return this;
+
+                U.each(handles,function(handle){
+                    handle.call(null,{'target':el,'type':type});
+                });
+            }
+
+            return this;
         }
     };
 
