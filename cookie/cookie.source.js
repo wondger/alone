@@ -243,7 +243,7 @@
             //当所有subcookie都被删除时，main cookie也将被删除
             return this.del(main) && this.set(cookie,main);
         }
-    }
+    };
 
-    win.Cookie = Cookie;
+    win.Alone = {'Cookie':Cookie};
 })(document,window);

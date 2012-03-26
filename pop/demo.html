@@ -45,7 +45,7 @@
         msg = function(msg){
             msgE.innerHTML = msg;
         },
-        pop1 = Pop().render({
+        pop1 = Alone.Pop().render({
             prefixCls:'sex_',
             url:'http://fedtool.com/',
             maskable:true,
@@ -59,7 +59,7 @@
         }).on('show',function(){
             msg('pop1 show event trigger!')
         }).show(),
-        pop2 = Pop({
+        pop2 = Alone.Pop({
             type:'dialog',
             title:'srcNode'
         }).render({

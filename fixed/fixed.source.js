@@ -40,11 +40,12 @@
             return o === win || o === doc || o === rt || U.isE();
         },
         isStrict:doc.compatMode === 'CSS1Compat',
-        each:function(arr,fn){
-            if(!U.isA(arr) || !U.isF(fn)) return;
-            
-            var i = 0,l = arr.length;
-            while(i<l,fn.call(null,arr[i++]));
+        each:function(o,fn,scope){
+            if(!U.isO(o) || !U.isA(o) || !U.isF(fn)) return;
+
+            for(var k in o){
+                fn.call(scrop || null,o[k],k);
+            }
         },
         trim:function(s){
             return s.replace(/^\s+/,'').replace(/\s+$/,'');
@@ -178,5 +179,5 @@
         }
     };
 
-    win.Fixed = Fixed;
+    win.Alone = {'Fixed':Fixed};
 })(document,document.documentElement,window)
