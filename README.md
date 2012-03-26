@@ -4,7 +4,7 @@
 <h2>Pop</h2>
 <p><a href="http://wondger.github.com/alone/pop/demo.html" target="_blank">demo</a></p>
 <pre>
-    var mypop = Pop(cfg);
+var mypop = Alone.Pop(cfg);
 </pre>
 <h3>Config Attribute</h3>
 <ul>
@@ -38,7 +38,7 @@
 <h2>Fixed</h2>
 <p><a href="http://wondger.github.com/alone/fixed/demo.html" target="_blank">demo</a></p>
 <pre>
-    var myfixed = Fixed(el[,cfg]).init();
+var myfixed = Alone.Fixed(el[,cfg]).init();
 </pre>
 <h3>Config Attribute</h3>
 <ul>
@@ -55,15 +55,15 @@
 <p>Support SubCookie <a href="http://wondger.github.com/alone/cookie/demo.html" target="_blank">demo</a></p>
 <h3>Method</h3>
 <ul>
-    <li>Cookie.set({name:value[,expires:GMTString,path:'',domain:'',secure:'']}[,main])</li>
-    <li>Cookie.set({name1:value1,name2:value2...[,expires:GMTString,path:'',domain:'',secure:'']}[,main])</li>
-    <li>Cookie.setSub({name:value[,expires:GMTString,path:'',domain:'',secure:'']},main)</li>
-    <li>Cookie.setSub({name1:value1,name2:value2...[,expires:GMTString,path:'',domain:'',secure:'']},main)</li>
-    <li>Cookie.get(name[,main])</li>
-    <li>Cookie.getSub(name,main)</li>
-    <li>Cookie.attr({[expires:'',path:''...]},name)</li>
-    <li>Cookie.del(name[,main])</li>
-    <li>Cookie.del([name1,name2,name3...][,main])</li>
-    <li>Cookie.delSub(name,main)</li>
-    <li>Cookie.delSub([name1,name2,name3...],main)</li>
+    <li>Alone.Cookie.set({name:value[,expires:GMTString,path:'',domain:'',secure:'']}[,main])</li>
+    <li>Alone.Cookie.set({name1:value1,name2:value2...[,expires:GMTString,path:'',domain:'',secure:'']}[,main])</li>
+    <li>Alone.Cookie.setSub({name:value[,expires:GMTString,path:'',domain:'',secure:'']},main)</li>
+    <li>Alone.Cookie.setSub({name1:value1,name2:value2...[,expires:GMTString,path:'',domain:'',secure:'']},main)</li>
+    <li>Alone.Cookie.get(name[,main])</li>
+    <li>Alone.Cookie.getSub(name,main)</li>
+    <li>Alone.Cookie.attr({[expires:'',path:''...]},name)</li>
+    <li>Alone.Cookie.del(name[,main])</li>
+    <li>Alone.Cookie.del([name1,name2,name3...][,main])</li>
+    <li>Alone.Cookie.delSub(name,main)</li>
+    <li>Alone.Cookie.delSub([name1,name2,name3...],main)</li>
 </ul>
