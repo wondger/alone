@@ -90,7 +90,7 @@
     //Event
     E = {
         on:function(ele,type,handle){
-            var type = /^(on)/.test(type) ? type.substr(2) : type;
+            if(!U.isS(type) || !U.isF(handle)) return this;
             if(ele.addEListener){
                 ele.addEListener(type,function(){handle.call(ele)},false);
             }else if(ele.attachEvent){
