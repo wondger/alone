@@ -42,10 +42,10 @@
         },
         isStrict:doc.compatMode === 'CSS1Compat',
         each:function(o,fn,scope){
-            if(!U.isO(o) || !U.isA(o) || !U.isF(fn)) return;
+            if((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) return;
 
             for(var k in o){
-                fn.call(scrop || null,o[k],k);
+                fn.call(scope||null,o[k],k);
             }
         },
         trim:function(s){
