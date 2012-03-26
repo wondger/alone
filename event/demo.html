@@ -17,7 +17,9 @@
     Alone.Event.on(document.body,'click',function(){
         Alone.Event.fire(this,'say');
     });
-    Alone.Event.on(document.body,'say',function(){alert('body has said something!')});
+    Alone.Event.on(document.body,'say',function(evt){
+        alert(evt.target+' trigger '+evt.type);
+    });
 </script>
 </body>
 </html>
