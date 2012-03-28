@@ -142,6 +142,12 @@
 
             if(U.isEmpty(kv)) return ret;
 
+            if(U.isN(cfg.expires)){
+                var d = new Date();
+                d.setSeconds(cfg.expires);
+                cfg.expires = d.toGMTString();
+            }
+
             for(var k in kv){
                 temp = {};
                 temp[k] = kv[k];
