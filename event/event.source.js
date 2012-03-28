@@ -22,7 +22,8 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            //toString return '[object Object]' for null and undefined in fuck ie
+            return !!o && ts.call(o) === '[object Object]';
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';
@@ -32,6 +33,15 @@
         },
         isE:function(o){
             return !!(o && o.nodeType && o.nodeType == 1);
+        },
+        isEmpty:function(o){
+            if(!U.isA(o) && !U.isO(o))  throw 'type error';
+
+            if(U.isA(o)) return !o.length;
+
+            for(var k in o){
+                return false;
+            }
         },
         each:function(o,fn,scope){
             if((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) return;
@@ -43,6 +53,42 @@
         ua:{
             ie:/msie/.test(ua) && !/opera/i.test(ua),
             ie6:/msie 6/.test(ua)
+        },
+        inc:function(o,t){
+            var ret,t = U.isU(t) ? t : (U.isA(t) ? t : [t]);
+            if((!U.isA(o) && !U.isO(o)) || U.isU(t)) throw 'type error';
+
+            if(U.isA(o) && !U.isEmpty(o)){
+                ret = [];
+                for(var i = 0,l = t.length; i < l; i++){
+                    if(o.indexOf && o.indexOf(t[i]) !== -1){
+                        ret.push(t[i]);
+                        t.splice(i,1);
+                    }else{
+                        var j = o.length;
+                        while(j--){
+                            if(o[j] === t[i]){
+                                ret.push(t[i]);
+                                t.splice(i,1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(U.isO(o)){
+                ret = {};
+                for(var k in o){
+                    for(var i = 0,l = t.length; i < l; i++){
+                        if(k===t[i]){
+                            ret[k] = o[k];
+                            t.splice(i,1);
+                        }
+                    }
+                }
+            }
+
+            return U.isEmpty(ret) ? false : ret;
         }
     },
     //standard Event
@@ -56,11 +102,14 @@
             'keyup',
             'keydown',
             'focus',
-            'blur'
+            'blur',
+            'submit'
         ],
         create:function(type,cfg){
             var type = U.isS(type) && type || 'Event',
                 evt = U.ua.ie ? doc.createEventObject() : doc.createEvent(type);
+
+            !U.ua.ie && evt.initMouseEvent("click",true,true,window,0,0,0,0,0,false,false,false,false,0,null);
 
             return evt;
         },
@@ -90,10 +139,18 @@
         fire:function(el,type){
             if(!U.isE(el) || !U.isS(type)) return;
 
-            var evt = this.create();
+            var evt = this.create('MouseEvents');
 
             if(U.ua.ie){
+                evt.returnValue = true;
+                evt.button = 1;
+                evt.cancelBubble = true;
                 el.fireEvent('on'+type,evt);
+
+                //won't invoke event function automatically in fuck ie
+                //!!el[type].call && el[type]();
+            }else{
+                el.dispatchEvent(evt);
             }
         }
     },
@@ -105,7 +162,7 @@
         __cstEvts__:{},
         on:function(el,type,handle){
             if(!U.isS(type) || !U.isF(handle)) return this;
-            if(E.std.indexOf(type)>-1){
+            if(U.inc(E.std,type)){
                 E.on(el,type,handle);
             }else{
                 var evtId = el[this.evtId] = el[this.evtId] || ++guid;
@@ -119,7 +176,7 @@
         fire:function(el,type){
             if(!U.isE(el) || !U.isS(type)) return this;
 
-            if(E.std.indexOf(type)>-1){
+            if(U.inc(E.std,type)){
                 E.fire(el,type);
             }else{
                 var handles = el[this.evtId] ? this.__cstEvts__[el[this.evtId]][type] || null : null;

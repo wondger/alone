@@ -10,19 +10,26 @@
 </style>
 <script type="text/javascript" src="event.source.js"></script>
 </head>
-<body onclick="alert('be clicked!')">
+<body>
 <div id="page" style="height:2000px;">
     <a href="http://www.taobao.com/" target="_blank" id="J_link">what?</a>
+    <form action="http://www.taobao.com/" method="get" target="_blank" id="J_form">
+    </form>
+    <div id="log">
+        
+    </div>
 </div>
 <script>
-    Alone.Event.on(document.body,'click',function(evt){
-        console.dir(evt)
-        Alone.Event.fire(this,'say');
-    });
-    Alone.Event.on(document.body,'say',function(evt){
+    Alone.Event.on(document.getElementById('J_form'),'submit',function(evt){
         alert(evt.target+' trigger '+evt.type);
+        var log = document.getElementById('log');
+        for(var k in evt){
+            log.innerHTML += k + ': ' + evt[k] + '<br />';
+        }
     });
-    Alone.Event.fire(document.body,'click');
+    //Alone.Event.fire(document.getElementById('J_link'),'click');
+    //Alone.Event.fire(document.body,'click');
+    Alone.Event.fire(document.getElementById('J_form'),'submit');
 </script>
 </body>
 </html>

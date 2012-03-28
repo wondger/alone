@@ -23,7 +23,7 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            return !!o && ts.call(o) === '[object Object]';
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';

@@ -23,7 +23,7 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            return !!o && ts.call(o) === '[object Object]';
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';
@@ -82,12 +82,20 @@
             var ret,t = U.isU(t) ? t : (U.isA(t) ? t : [t]);
             if((!U.isA(o) && !U.isO(o)) || U.isU(t)) throw 'type error';
 
-            if(U.isA(o)){
+            if(U.isA(o) && !U.isEmpty(o)){
                 ret = [];
                 for(var i = 0,l = t.length; i < l; i++){
-                    if(o.indexOf(t[i]) !== -1){
+                    if(o.indexOf && o.indexOf(t[i]) !== -1){
                         ret.push(t[i]);
                         t.splice(i,1);
+                    }else{
+                        var j = o.length;
+                        while(j--){
+                            if(o[j] === t[i]){
+                                ret.push(t[i]);
+                                t.splice(i,1);
+                            }
+                        }
                     }
                 }
             }
@@ -130,10 +138,10 @@
 
             return ret;
         },
+        os:new Date().getTimezoneOffset() * 60000,
         now:function(){
             //时区偏移,ms
-            var os = new Date().getTimezoneOffset() * 60000;
-            return new Date(new Date().getTime() - os);
+            return new Date(new Date().getTime() - this.os);
         }
     },
     Cookie = {
