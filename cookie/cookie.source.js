@@ -23,7 +23,7 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            return Object(o) === o;
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';
@@ -145,7 +145,7 @@
             for(var k in kv){
                 temp = {};
                 temp[k] = kv[k];
-                ret.push(U.join(U.mix(temp,_cfg),function(v,k){return !!v},'; '));
+                ret.push(U.join(U.mix(temp,_cfg),function(v,k){return !!v},';'));
             }
 
             return ret;

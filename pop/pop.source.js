@@ -23,7 +23,7 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            return Object(o) === o;
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';
@@ -32,7 +32,7 @@
             return ts.call(o) === '[object Array]';
         },
         isE:function(o){
-            return !U.isU(o) && !!(o && o.nodeType && o.nodeType == 1);
+            return !!(o && o.nodeType && o.nodeType == 1);
         },
         /*
          * window,document,document.documentElement,element
@@ -135,19 +135,21 @@
 
     //Event
     E = {
-        on:function(ele,type,handle){
+        on:function(el,type,handle){
             if(!U.isS(type) || !U.isF(handle)) return this;
-            if(ele.addEListener){
-                ele.addEListener(type,function(){handle.call(ele)},false);
-            }else if(ele.attachEvent){
-                ele.attachEvent('on'+type,function(){handle.call(ele)});
+            if(el.addEListener){
+                el.addEListener(type,function(){handle.call(el)},false);
+            }else if(el.attachEvent){
+                el.attachEvent('on'+type,function(){handle.call(el,win.event)});
             }else{
-                var _handle = ele['on'+type];
-                ele['on'+type] = function(){
-                    if(_handle) _handle.call(ele);
-                    handle.call(ele);
+                var _handle = el['on'+type];
+                el['on'+type] = function(){
+                    if(_handle) _handle.call(el,win.event);
+                    handle.call(el,win.event);
                 }
             }
+
+            return this;
         },
         fire:function(evt,_){
             U.each(evt,function(fn){

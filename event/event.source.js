@@ -22,7 +22,7 @@
             return ts.call(o) === '[object Number]';
         },
         isO:function(o){
-            return ts.call(o) === '[object Object]';
+            return Object(o) === o;
         },
         isF:function(o){
             return ts.call(o) === '[object Function]';
@@ -31,7 +31,7 @@
             return ts.call(o) === '[object Array]';
         },
         isE:function(o){
-            return !U.isU(o) && !!(o && o.nodeType && o.nodeType == 1);
+            return !!(o && o.nodeType && o.nodeType == 1);
         },
         each:function(o,fn,scope){
             if((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) return;
@@ -39,6 +39,10 @@
             for(var k in o){
                 fn.call(scope||null,o[k],k);
             }
+        },
+        ua:{
+            ie:/msie/.test(ua) && !/opera/i.test(ua),
+            ie6:/msie 6/.test(ua)
         }
     },
     //standard Event
@@ -54,17 +58,23 @@
             'focus',
             'blur'
         ],
+        create:function(type,cfg){
+            var type = U.isS(type) && type || 'Event',
+                evt = U.ua.ie ? doc.createEventObject() : doc.createEvent(type);
+
+            return evt;
+        },
         on:function(el,type,handle){
             if(!U.isS(type) || !U.isF(handle)) return this;
             if(el.addEListener){
                 el.addEListener(type,function(){handle.call(el)},false);
-            }else if(el.attachE){
-                el.attachE('on'+type,function(){handle.call(el)});
+            }else if(el.attachEvent){
+                el.attachEvent('on'+type,function(){handle.call(el,win.event)});
             }else{
                 var _handle = el['on'+type];
                 el['on'+type] = function(){
-                    if(_handle) _handle.call(el);
-                    handle.call(el);
+                    if(_handle) _handle.call(el,win.event);
+                    handle.call(el,win.event);
                 }
             }
 
@@ -76,6 +86,15 @@
         delegate:function(to,el,type,handle){
         },
         undelegate:function(to,el,type,handle){
+        },
+        fire:function(el,type){
+            if(!U.isE(el) || !U.isS(type)) return;
+
+            var evt = this.create();
+
+            if(U.ua.ie){
+                el.fireEvent('on'+type,evt);
+            }
         }
     },
     //guid must be private
@@ -101,6 +120,7 @@
             if(!U.isE(el) || !U.isS(type)) return this;
 
             if(E.std.indexOf(type)>-1){
+                E.fire(el,type);
             }else{
                 var handles = el[this.evtId] ? this.__cstEvts__[el[this.evtId]][type] || null : null;
 

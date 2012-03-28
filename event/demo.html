@@ -10,16 +10,19 @@
 </style>
 <script type="text/javascript" src="event.source.js"></script>
 </head>
-<body>
+<body onclick="alert('be clicked!')">
 <div id="page" style="height:2000px;">
+    <a href="http://www.taobao.com/" target="_blank" id="J_link">what?</a>
 </div>
 <script>
-    Alone.Event.on(document.body,'click',function(){
+    Alone.Event.on(document.body,'click',function(evt){
+        console.dir(evt)
         Alone.Event.fire(this,'say');
     });
     Alone.Event.on(document.body,'say',function(evt){
         alert(evt.target+' trigger '+evt.type);
     });
+    Alone.Event.fire(document.body,'click');
 </script>
 </body>
 </html>
