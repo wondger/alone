@@ -162,14 +162,14 @@
             var cfg = cfg || {},cookie;
             if(U.isS(main)) return this.setSub(cfg,main);
 
-            cookie = this._serializeCookie(cfg);
-
             //expires support integer
             if(U.isN(cfg.expires)){
                 var d = new Date();
                 d.setSeconds(cfg.expires);
                 cfg.expires = d.toGMTString();
             }
+
+            cookie = this._serializeCookie(cfg);
 
             //document.cookie只能逐一赋值
             for(var i = 0,l = cookie.length; i < l; i++){
