@@ -133,7 +133,7 @@
         now:function(){
             //时区偏移,ms
             var os = new Date().getTimezoneOffset() * 60000;
-            return new Date(new Date().getTime - os);
+            return new Date(new Date().getTime() - os);
         }
     },
     Cookie = {
