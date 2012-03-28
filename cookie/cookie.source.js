@@ -129,6 +129,11 @@
             }
 
             return ret;
+        },
+        now:function(){
+            //时区偏移,ms
+            var os = new Date().getTimezoneOffset() * 60000;
+            return new Date(new Date().getTime - os);
         }
     },
     Cookie = {
@@ -164,7 +169,7 @@
 
             //expires support integer
             if(U.isN(cfg.expires)){
-                var d = new Date();
+                var d = U.now();
                 d.setSeconds(cfg.expires);
                 cfg.expires = d.toGMTString();
             }
