@@ -33,7 +33,7 @@
             return ts.call(o) === '[object Array]';
         },
         isEmpty:function(o){
-            if(!U.isA(o) && !U.isO(o))  throw 'type error';
+            if(!U.isA(o) && !U.isO(o)) return;
 
             if(U.isA(o)) return !o.length;
 
@@ -77,7 +77,7 @@
         //object,target
         inc:function(o,t){
             var ret,t = U.isU(t) ? t : (U.isA(t) ? t : [t]);
-            if((!U.isA(o) && !U.isO(o)) || U.isU(t)) throw 'type error';
+            if((!U.isA(o) && !U.isO(o)) || U.isU(t)) return;
 
             if(U.isA(o) && !U.isEmpty(o)){
                 ret = [];

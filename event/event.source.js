@@ -40,7 +40,7 @@
             return !!(o && o.nodeType && o.nodeType == 1);
         },
         isEmpty:function(o){
-            if(!U.isA(o) && !U.isO(o))  throw 'type error';
+            if(!U.isA(o) && !U.isO(o)) return;
 
             if(U.isA(o)) return !o.length;
 
@@ -58,6 +58,42 @@
         ua:{
             ie:ie,
             ie6:ie === 6
+        },
+        inc:function(o,t){
+            var ret,t = U.isU(t) ? t : (U.isA(t) ? t : [t]);
+            if((!U.isA(o) && !U.isO(o)) || U.isU(t)) return;
+
+            if(U.isA(o) && !U.isEmpty(o)){
+                ret = [];
+                for(var i = 0,l = t.length; i < l; i++){
+                    if(o.indexOf && o.indexOf(t[i]) !== -1){
+                        ret.push(t[i]);
+                        t.splice(i,1);
+                    }else{
+                        var j = o.length;
+                        while(j--){
+                            if(o[j] === t[i]){
+                                ret.push(t[i]);
+                                t.splice(i,1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(U.isO(o) && !U.isEmpty(o)){
+                ret = {};
+                for(var k in o){
+                    for(var i = 0,l = t.length; i < l; i++){
+                        if(k===t[i]){
+                            ret[k] = o[k];
+                            t.splice(i,1);
+                        }
+                    }
+                }
+            }
+
+            return U.isEmpty(ret) ? false : ret;
         }
     },
     //standard Event
@@ -186,10 +222,14 @@
             if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
                 E.on(el,type,handle,useCapture);
             }else{
-                var evtId = el[this.evtId] = el[this.evtId] || ++guid;
+                var evtId = el[this.evtId] = el[this.evtId] || ++guid,
+                    handles;
+
                 this.__cstEvts__[evtId] = this.__cstEvts__[evtId] || {};
-                this.__cstEvts__[evtId][type] = this.__cstEvts__[evtId][type] || [];
-                this.__cstEvts__[evtId][type].push(handle);
+                handles = this.__cstEvts__[evtId][type] = this.__cstEvts__[evtId][type] || [];
+
+                //不重复注册
+                !U.inc(handles,handle) && this.__cstEvts__[evtId][type].push(handle);
             }
 
             return this;
@@ -220,6 +260,14 @@
         off:function(el,type,handle,useCapture){
             if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
                 E.off(el,type,handle,useCapture);
+            }else{
+                var handles = el[this.evtId] ? this.__cstEvts__[el[this.evtId]][type] || null : null;
+
+                if(!handles) return this;
+
+                U.each(handles,function(handle,index){
+                    handles.splice(index,1);
+                });
             }
             
             return this;

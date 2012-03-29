@@ -20,14 +20,18 @@
     </div>
 </div>
 <script>
-    Alone.Event.on(document.body,'click',say);
+    Alone.Event.on(document.body,'say',say);
+    Alone.Event.on(document.body,'say',say);
+    Alone.Event.on(document.body,'click',function(){
+        Alone.Event.fire(document.body,'say');
+        Alone.Event.off(document.body,'say',say);
+    });
     function say(evt){
         //alert(window.event.target)
         alert(evt.type);
         alert(evt.currentTarget.outerHTML);
-        Alone.Event.off(document.body,'click',say);
     }
-    Alone.Event.fire(document.body,'click');
+    Alone.Event.fire(document.body,'say');
     //Alone.Event.fire(document.getElementById('J_link'),'click');
 </script>
 </body>
