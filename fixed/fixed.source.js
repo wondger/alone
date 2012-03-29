@@ -8,7 +8,12 @@
  * @changenlog:
  */
 (function(doc,rt,win,undefined){
-    var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
+    var ua = navigator.userAgent.toLowerCase(),
+        ts = Object.prototype.toString,
+        ie = (function(){
+                var ret = !/opera/i.test(ua) && ua.match(/msie\s(\d+)\.\d+;/i) || null;
+                return ret && parseInt(ret[1]) || 0;
+        })();
 
     //util
     var U = {
@@ -57,8 +62,8 @@
             });
         },
         ua:{
-            ie:/msie/.test(ua) && !/opera/i.test(ua),
-            ie6:/msie 6/.test(ua)
+            ie:ie,
+            ie6:ie === 6
         }
     },
 

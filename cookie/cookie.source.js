@@ -7,8 +7,9 @@
  * @todo:
  * @changelog:
  */
-(function(doc,win){
-    var ua = win.navigator.userAgent,ts = Object.prototype.toString;
+(function(doc,win)
+    var ts = Object.prototype.toString;
+
     var U = {
         isU:function(o){
             return o === void 0;
@@ -39,10 +40,6 @@
             for(var k in o){
                 return false;
             }
-        },
-        ua:{
-            ie:/msie/.test(ua) && !/opera/i.test(ua),
-            ie6:/msie 6/.test(ua)
         },
         join:function(o,filter,sep){
             var ret = [];
@@ -179,7 +176,7 @@
             if(U.isN(cfg.expires)){
                 var d = U.now();
                 d.setSeconds(cfg.expires);
-                cfg.expires = d.toGMTString();
+                cfg.expires = d.toUTCString();
             }
 
             cookie = this._serializeCookie(cfg);
