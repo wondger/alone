@@ -20,16 +20,13 @@
     </div>
 </div>
 <script>
-    Alone.Event.on(document.getElementById('J_form'),'submit',function(evt){
-        alert(evt.target+' trigger '+evt.type);
-        var log = document.getElementById('log');
-        for(var k in evt){
-            log.innerHTML += k + ': ' + evt[k] + '<br />';
-        }
+    Alone.Event.on(document.body,'click',function(evt){
+        //alert(window.event.target)
+        alert('saying!');
+        alert(evt)
     });
+    Alone.Event.fire(document.body,'click');
     //Alone.Event.fire(document.getElementById('J_link'),'click');
-    //Alone.Event.fire(document.body,'click');
-    Alone.Event.fire(document.getElementById('J_form'),'submit');
 </script>
 </body>
 </html>

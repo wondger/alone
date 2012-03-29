@@ -8,7 +8,12 @@
  * @changelog:
  */
 (function(doc,rt,win,undefined){
-    var ua = navigator.userAgent.toLowerCase(),ts = Object.prototype.toString;
+    var ua = navigator.userAgent.toLowerCase(),
+        ts = Object.prototype.toString,
+        ie = (function(){
+                var ret = !/opera/i.test(ua) && ua.match(/msie\s(\d+)\.\d+;/i) || null;
+                return ret && parseInt(ret[1]) || 0;
+        })();
 
     //util
     var U = {
@@ -51,74 +56,62 @@
             }
         },
         ua:{
-            ie:/msie/.test(ua) && !/opera/i.test(ua),
-            ie6:/msie 6/.test(ua)
-        },
-        inc:function(o,t){
-            var ret,t = U.isU(t) ? t : (U.isA(t) ? t : [t]);
-            if((!U.isA(o) && !U.isO(o)) || U.isU(t)) throw 'type error';
-
-            if(U.isA(o) && !U.isEmpty(o)){
-                ret = [];
-                for(var i = 0,l = t.length; i < l; i++){
-                    if(o.indexOf && o.indexOf(t[i]) !== -1){
-                        ret.push(t[i]);
-                        t.splice(i,1);
-                    }else{
-                        var j = o.length;
-                        while(j--){
-                            if(o[j] === t[i]){
-                                ret.push(t[i]);
-                                t.splice(i,1);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if(U.isO(o)){
-                ret = {};
-                for(var k in o){
-                    for(var i = 0,l = t.length; i < l; i++){
-                        if(k===t[i]){
-                            ret[k] = o[k];
-                            t.splice(i,1);
-                        }
-                    }
-                }
-            }
-
-            return U.isEmpty(ret) ? false : ret;
+            ie:ie,
+            ie6:ie === 6
         }
     },
     //standard Event
     E = {
-        std:[
-            'click',
-            'mouseenter',
-            'mouseover',
-            'mousedown',
-            'mouseleave',
-            'keyup',
-            'keydown',
-            'focus',
-            'blur',
-            'submit'
-        ],
-        create:function(type,cfg){
-            var type = U.isS(type) && type || 'Event',
-                evt = U.ua.ie ? doc.createEventObject() : doc.createEvent(type);
+        std:{
+            events:[
+                'MouseEvent:click,dbclick,mousedown,mouseenter,mouseleave,mousemove,mouseout,mouseover,mouseup',
+                'UIEvents:DOMActivate,load,unload,abort,error,select,resize,scroll',
+                'FocusEvent:blur,DOMFocusIn,DOMFocusOut,focus,focusin,focusout',
+                'WheelEvent:wheel',
+                'KeyboardEvent:keydown,keypress,keyup,',
+                'CompositionEvent:compositionstart,compositionupdate,compositionend',
+                'MutationEvent:DOMAttrModified,DOMCharacterDataModified,DOMNodeInserted,DOMNodeInsertedIntoDocument,DOMNodeRemoved,DOMNodeRemovedFromDocument,DOMSubtreeModified',
+                'MutationNameEvent:DOMElementNameChanged,DOMAttributeNameChanged'
+            ],
+            inc:function(evt){
+                if(!U.isS(evt)) return;
 
-            !U.ua.ie && evt.initMouseEvent("click",true,true,window,0,0,0,0,0,false,false,false,false,0,null);
+                var regexp = new RegExp('(?:^|;)(?:(\\w+):)(?:\\w+,)*'+evt+'(?=;|(?:,\\w+)|$)'),
+                    ret = E.std.events.join(';').match(regexp);
 
-            return evt;
+                return ret ? ret[1] : null;
+            }
+        },
+        init:function(type,cfg){
+            if(!U.isS(type)) return;
+
+            var evt = E.std.inc(type) || 'CustomEvent',
+                _evt;
+            if(doc.createEvent){
+                _evt = doc.createEvent(evt);
+                /*
+                 * initCustomEvent(in DOMString type,in boolean canBubble,in boolean cancelable,in any detail);
+                 * @see:http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html#events-Event
+                 * @see:https://developer.mozilla.org/en/DOM/CustomEvent
+                 */
+                //the detail param is request in ie9+
+                //use initEvent will
+                //_evt['init'+evt](type,true,true,null);
+                _evt.initEvent(type,true,true,null);
+                //_evt.initMouseEvent(type,true,true,window,0,0,0,0,0,false,false,false,false,0,null);
+            }else{
+                _evt = doc.createEventObject(cfg);
+            }
+
+            return _evt;
         },
         on:function(el,type,handle){
             if(!U.isS(type) || !U.isF(handle)) return this;
-            if(el.addEListener){
-                el.addEListener(type,function(){handle.call(el)},false);
+            if(el.addEventListener){
+                //window.event is null in ie
+                el.addEventListener(type,function(){handle.call(el,window.event)},false);
             }else if(el.attachEvent){
-                el.attachEvent('on'+type,function(){handle.call(el,win.event)});
+                el.attachEvent('on'+type,function(){handle.call(el,window.event)});
             }else{
                 var _handle = el['on'+type];
                 el['on'+type] = function(){
@@ -139,20 +132,39 @@
         fire:function(el,type){
             if(!U.isE(el) || !U.isS(type)) return;
 
-            var evt = this.create('MouseEvents');
+            var evt = this.init(type);
 
-            if(U.ua.ie){
-                evt.returnValue = true;
-                evt.button = 1;
-                evt.cancelBubble = true;
+            if(U.ua.ie && U.ua.ie < 9){
+                alert(evt)
                 el.fireEvent('on'+type,evt);
-
+                
                 //won't invoke event function automatically in fuck ie
                 //!!el[type].call && el[type]();
             }else{
                 el.dispatchEvent(evt);
             }
         }
+    },
+    //CustomEvent for DOM2 Event
+    //todo:CustomEvent prototype
+    CustomEvent = function(cfg){
+        if(!(this instanceof CustomEvent)) return new CustomEvent(cfg);
+
+        var cfg = U.isO(cfg) && cfg || {};
+
+        this.bubbles = !!cfg.bubbles;
+        this.cancelable = U.isU(cfg.cancelable) ? true : !!cfg.cancelable;
+        this.currentTarget = U.isE(cfg.currentTarget) ? cfg.currentTarget : null;
+        this.defaultPrevented = U.isU(cfg.defaultPrevented) ? false : !!cfg.defaultPrevented;
+        this.isTrusted = U.isU(cfg.isTrusted) ? false : !!cfg.isTrusted;
+        this.eventPhase = U.isN(cfg.eventPhase) ? cfg.eventPhase : 0;
+        this.target = U.isE(cfg.target) ? cfg.target : null;
+        this.timeStamp = U.isN(cfg.timeStamp) ? cfg.timeStamp : 0;
+        this.type = U.isS(cfg.type) ? cfg.type : '';
+        this.initEvent = function(){};
+        this.preventDefault = function(){};
+        this.stopImmediatePropagation = function(){};
+        this.stopPropagation = function(){};
     },
     //guid must be private
     guid = 0,
@@ -161,8 +173,8 @@
         __stdEvts__:{},
         __cstEvts__:{},
         on:function(el,type,handle){
-            if(!U.isS(type) || !U.isF(handle)) return this;
-            if(U.inc(E.std,type)){
+            if(!U.isE(el) || !U.isS(type) || !U.isF(handle)) return this;
+            if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
                 E.on(el,type,handle);
             }else{
                 var evtId = el[this.evtId] = el[this.evtId] || ++guid;
@@ -176,15 +188,20 @@
         fire:function(el,type){
             if(!U.isE(el) || !U.isS(type)) return this;
 
-            if(U.inc(E.std,type)){
+            if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
                 E.fire(el,type);
             }else{
                 var handles = el[this.evtId] ? this.__cstEvts__[el[this.evtId]][type] || null : null;
 
                 if(!handles) return this;
 
+                //@see:http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html#events-Event
                 U.each(handles,function(handle){
-                    handle.call(null,{'target':el,'type':type});
+                    handle.call(null,CustomEvent({
+                        type:type,
+                        target:el,
+                        timeStamp:new Date().getTime()
+                    }));
                 });
             }
 
