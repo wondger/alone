@@ -105,13 +105,13 @@
 
             return _evt;
         },
-        on:function(el,type,handle){
-            if(!U.isS(type) || !U.isF(handle)) return this;
+        on:function(el,type,handle,useCapture){
+            if(!U.isE(el) || !U.isS(type) || !U.isF(handle)) return this;
             if(el.addEventListener){
                 //window.event is null in ie
-                el.addEventListener(type,function(){handle.call(el,window.event)},false);
+                el.addEventListener(type,handle,!!useCapture);
             }else if(el.attachEvent){
-                el.attachEvent('on'+type,function(){handle.call(el,window.event)});
+                el.attachEvent('on'+type,handle);
             }else{
                 var _handle = el['on'+type];
                 el['on'+type] = function(){
@@ -122,7 +122,17 @@
 
             return this;
         },
-        off:function(el,type,handle){
+        off:function(el,type,handle,useCapture){
+            if(!U.isE(el) || !U.isS(type) || !U.isF(handle)) return this;
+
+            if(el.removeEventListener){
+                el.removeEventListener(type,handle,!!useCapture);
+            }else{
+                el.detach(type,handle);
+            }
+
+            //todo:remove handle added by el['on'+type]
+
             return this;
         },
         delegate:function(to,el,type,handle){
@@ -135,7 +145,6 @@
             var evt = this.init(type);
 
             if(U.ua.ie && U.ua.ie < 9){
-                alert(evt)
                 el.fireEvent('on'+type,evt);
                 
                 //won't invoke event function automatically in fuck ie
@@ -172,10 +181,10 @@
         evtId:'evt_' + new Date().getTime(),
         __stdEvts__:{},
         __cstEvts__:{},
-        on:function(el,type,handle){
+        on:function(el,type,handle,useCapture){
             if(!U.isE(el) || !U.isS(type) || !U.isF(handle)) return this;
             if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
-                E.on(el,type,handle);
+                E.on(el,type,handle,useCapture);
             }else{
                 var evtId = el[this.evtId] = el[this.evtId] || ++guid;
                 this.__cstEvts__[evtId] = this.__cstEvts__[evtId] || {};
@@ -200,11 +209,19 @@
                     handle.call(null,CustomEvent({
                         type:type,
                         target:el,
+                        currentTarget:el,
                         timeStamp:new Date().getTime()
                     }));
                 });
             }
 
+            return this;
+        },
+        off:function(el,type,handle,useCapture){
+            if(!U.ua.ie || U.ua.ie >= 9 || E.std.inc(type)){
+                E.off(el,type,handle,useCapture);
+            }
+            
             return this;
         }
     };

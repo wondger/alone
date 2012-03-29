@@ -20,11 +20,13 @@
     </div>
 </div>
 <script>
-    Alone.Event.on(document.body,'click',function(evt){
+    Alone.Event.on(document.body,'click',say);
+    function say(evt){
         //alert(window.event.target)
-        alert('saying!');
-        alert(evt)
-    });
+        alert(evt.type);
+        alert(evt.currentTarget.outerHTML);
+        Alone.Event.off(document.body,'click',say);
+    }
     Alone.Event.fire(document.body,'click');
     //Alone.Event.fire(document.getElementById('J_link'),'click');
 </script>

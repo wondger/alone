@@ -97,10 +97,10 @@
     E = {
         on:function(el,type,handle){
             if(!U.isS(type) || !U.isF(handle)) return this;
-            if(el.addEListener){
-                el.addEListener(type,function(){handle.call(el)},false);
+            if(el.addEventListener){
+                el.addEventListener(type,handle,false);
             }else if(el.attachEvent){
-                el.attachEvent('on'+type,function(){handle.call(el,win.event)});
+                el.attachEvent('on'+type,handle);
             }else{
                 var _handle = el['on'+type];
                 el['on'+type] = function(){
