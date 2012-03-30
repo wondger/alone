@@ -131,10 +131,10 @@
                  * @see:https://developer.mozilla.org/en/DOM/CustomEvent
                  */
                 //the detail param is request in ie9+
-                //use initEvent will
+                //initEvent accept 4 parameters
+                _evt.initEvent(type,true,true);
+                //every event initialize method accept different parameters
                 //_evt['init'+evt](type,true,true,null);
-                _evt.initEvent(type,true,true,null);
-                //_evt.initMouseEvent(type,true,true,window,0,0,0,0,0,false,false,false,false,0,null);
             }else{
                 _evt = doc.createEventObject(cfg);
             }
@@ -150,9 +150,10 @@
                 el.attachEvent('on'+type,handle);
             }else{
                 var _handle = el['on'+type];
-                el['on'+type] = function(){
-                    if(_handle) _handle.call(el,win.event);
-                    handle.call(el,win.event);
+                el['on'+type] = function(evt){
+                    var evt = evt || win.event;
+                    if(_handle) _handle(evt);
+                    handle(evt);
                 }
             }
 
@@ -167,7 +168,7 @@
                 el.detach(type,handle);
             }
 
-            //todo:remove handle added by el['on'+type]
+            //TODO:remove handle added by el['on'+type],but need?
 
             return this;
         },
@@ -181,8 +182,8 @@
             var evt = this.init(type);
 
             if(U.ua.ie && U.ua.ie < 9){
+                //fireEvent只能触发标准事件，自定义事件不能触发
                 el.fireEvent('on'+type,evt);
-                
                 //won't invoke event function automatically in fuck ie
                 //!!el[type].call && el[type]();
             }else{
@@ -191,11 +192,12 @@
         }
     },
     //CustomEvent for DOM2 Event
-    //todo:CustomEvent prototype
+    //TODO:CustomEvent prototype
     CustomEvent = function(cfg){
         if(!(this instanceof CustomEvent)) return new CustomEvent(cfg);
 
-        var cfg = U.isO(cfg) && cfg || {};
+        var cfg = U.isO(cfg) && cfg || {},
+            _ = this;
 
         this.bubbles = !!cfg.bubbles;
         this.cancelable = U.isU(cfg.cancelable) ? true : !!cfg.cancelable;
