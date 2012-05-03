@@ -7,7 +7,7 @@
  * @todo:
  * @changelog:
  */
-(function(doc,win)
+(function(doc,win){
     var ts = Object.prototype.toString;
 
     var U = {
