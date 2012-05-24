@@ -80,7 +80,7 @@
                 for(var k in attr){
                     switch(k.toLowerCase()){
                         case 'class':
-                            el.setAttribute(U.ua.ie6?'className':'class',attr[k]);
+                            el.className = attr[k];
                             break;
                         default:
                             el.setAttribute(k,attr[k]);
