@@ -5,7 +5,7 @@
  * @date:2012-02-23
  * @param:
  * @todo:
- *      1.优化重复mask问题 [2012-03-19 finished]
+ *      [O].优化重复mask问题 [2012-03-19 finished]
  * @changelog:
  */
 (function(doc,rt,win,undefined){

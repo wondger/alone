@@ -7,77 +7,105 @@
  * @todo:
  * @changenlog:
  */
-(function(doc,rt,win,undefined){
-    var ts = Object.prototype.toString;
-    //util
-    var U = {
-        isU:function(o){
-            return o === void 0;
-        },
-        isS:function(o){
-            return ts.call(o) === '[object String]';
-        },
-        isN:function(o){
-            return ts.call(o) === '[object Number]';
-        },
-        isO:function(o){
-            return !!o && ts.call(o) === '[object Object]';
-        },
-        isF:function(o){
-            return ts.call(o) === '[object Function]';
-        },
-        isA:function(o){
-            return ts.call(o) === '[object Array]';
-        },
-        each:function(o,fn,scope){
-            if((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) return;
+(function (doc, rt, win, undef) {
+    'use strict';
+    var ts = Object.prototype.toString,
+        //util
+        U = {
+            isU: function (o) {
+                return o === void 0;
+            },
+            isS: function (o) {
+                return ts.call(o) === '[object String]';
+            },
+            isN: function (o) {
+                return ts.call(o) === '[object Number]';
+            },
+            isO: function (o) {
+                return !!o && ts.call(o) === '[object Object]';
+            },
+            isF: function (o) {
+                return ts.call(o) === '[object Function]';
+            },
+            isA: function (o) {
+                return ts.call(o) === '[object Array]';
+            },
+            each: function (o, fn, scope) {
+                if ((!U.isO(o) && !U.isA(o)) || !U.isF(fn)) {
+                    return;
+                }
 
-            for(var k in o){
-                fn.call(scope||null,o[k],k);
+                var k;
+                for (k in o) {
+                    if (o.hasOwnProperty(k)) {
+                        fn.call(scope || null, o[k], k);
+                    }
+                }
             }
-        }
-    },
+        },
 
-    Cache = function(){
-        var _ = this;
-        if(!(_ instanceof Cache)) return new Cache();
+        Cache = function () {
+            if (!(this instanceof Cache)) {
+                return new Cache();
+            }
 
-        this.__CACHE__ = [];
-    };
+            /*
+             * whether need a global CACHE?
+             */
+            this.CACHE = [];
+        };
 
     Cache.prototype = {
-        set:function(data,uniqKey){
-            var idx = !!uniqKey ? this.getIndex(uniqKey,data[uniqKey]) : -1;
-            if(idx !== -1) this.__CACHE__[idx] = data;
-            else this.__CACHE__.push(data);
+        set: function (data, uniqKey) {
+            var idx = !!uniqKey ? this.getIndex(uniqKey, data[uniqKey]) : -1;
+            if (idx !== -1) {
+                this.CACHE[idx] = data;
+            } else {
+                this.CACHE.push(data);
+            }
         },
-        get:function(key,value){
-            var idx = this.getIndex(key,value);
-            return idx !== -1 ? this.__CACHE__[idx] : null;
+        get: function (key, value) {
+            var idx = this.getIndex(key, value);
+            return idx !== -1 ? this.CACHE[idx] : null;
         },
-        getIndex:function(key,value){
-            if(!this.__CACHE__.length) return -1;
+        getIndex: function (key, value) {
+            if (!this.CACHE.length) {
+                return -1;
+            }
             var i = 0;
 
-            if(U.isS(key)){
-                while(this.__CACHE__[i][key] && this.__CACHE__[i][key]!==value) i++;
-            }else{
-                while(!this.inc(this.__CACHE__[i],key)) i++;
+            if (U.isS(key)) {
+                while (this.CACHE[i][key] && this.CACHE[i][key] !== value) {
+                    i += 1;
+                }
+            } else {
+                while (!this.inc(this.CACHE[i], key)) {
+                    i += 1;
+                }
             }
             return i;
         },
-        inc:function(s,o){
-            if(!U.isO(s) || !U.isO(o)) return;
+        inc: function (s, o) {
+            if (!U.isO(s) || !U.isO(o)) {
+                return;
+            }
 
-            var ret = true;
+            var ret = true,
+                k;
 
-            for(var k in o){
-                if(s[k] !== o[k]) return false;
+            for (k in o) {
+                if (o.hasOwnProperty(k) && s[k] !== o[k]) {
+                    return false;
+                }
             }
 
             return true;
         }
     };
 
-    U.isO(win.Alone) ? win.Alone.Cache = Cache : win.Alone = {'Cache':Cache};
-})(document,document.documentElement,window)
+    if (U.isO(win.Alone)) {
+        win.Alone.Cache = Cache;
+    } else {
+        win.Alone = {'Cache': Cache};
+    }
+}(document, document.documentElement, window));
